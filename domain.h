@@ -112,7 +112,7 @@ public:
 class ShapeTool : public ITool {
 public:
     enum Type { Line, Rect, Ellipse };
-    
+    Type getShapeType() const { return shapeType; } 
 private:
     QColor color;
     Type shapeType;

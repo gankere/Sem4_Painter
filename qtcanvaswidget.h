@@ -1,8 +1,8 @@
 #pragma once
 #include <QWidget>
 #include <QPixmap>
-#include <QList>      // ← Добавь
-#include <QString>    // ← Добавь
+#include <QList>
+#include <QString>
 #include "domain.h"
 
 class QtCanvasWidget : public QWidget {
@@ -29,7 +29,6 @@ signals:
     void pixelClicked(int x, int y);
 
 private:
-    // ← Структура для текста ВНУТРИ класса
     struct TextItem {
         QString text;
         QPoint pos;
@@ -45,7 +44,6 @@ private:
     QColor activeToolColor;
     int brushSize;
 
-    // Кэш отрисовки
     QPixmap canvasCache;
     bool cacheDirty;
     void updateCache();
@@ -54,9 +52,8 @@ private:
     void drawLine(const QPoint& from, const QPoint& to);
     void drawDirectlyOnCache(int canvasX, int canvasY, const QColor& color, int brushSize);
     
-    // Для ShapeTool
-    QPoint shapeStartPoint;
+    // Для фигур — первая точка (в координатах холста)
+    QPoint shapeStartCanvas;
     
-    // ← Для текста ВНУТРИ класса
     QList<TextItem> textItems;
 };

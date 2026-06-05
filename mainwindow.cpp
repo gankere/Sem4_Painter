@@ -35,8 +35,8 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
     toolGroup = new QButtonGroup(this);
     toolGroup->setExclusive(true);
     
-    // Лямбда для создания кнопок с иконками
-    auto createIconBtn = [&](const QString& iconPath, int id, bool checked = false) {
+    // Лямбда для кнопок ИНСТРУМЕНТОВ (кисть, ластик, ведро, текст)
+    auto createToolBtn = [&](const QString& iconPath, int id, bool checked = false) {
         auto* btn = new QPushButton;
         QIcon icon(iconPath); 
         if (!icon.isNull()) {
@@ -58,10 +58,10 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
     };
 
     // Инструменты
-    createIconBtn("icons/brush.png", 0, true);
-    createIconBtn("icons/eraser.png", 1);
-    createIconBtn("icons/bucket.png", 2);
-    createIconBtn("icons/text.png", 3);
+    createToolBtn("icons/brush.png", 0, true);
+    createToolBtn("icons/eraser.png", 1);
+    createToolBtn("icons/bucket.png", 2);
+    createToolBtn("icons/text.png", 3);
 
     // Разделитель
     auto* sep1 = new QFrame;
@@ -74,11 +74,32 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
     shapeGroup = new QButtonGroup(this);
     shapeGroup->setExclusive(true);
 
-    createIconBtn("icons/line.png", 10);
-    createIconBtn("icons/rectangle.png", 11);
-    createIconBtn("icons/ellipse.png", 12);
+    // Лямбда для кнопок ФИГУР (линия, прямоугольник, эллипс)
+    auto createShapeBtn = [&](const QString& iconPath, int id) {
+        auto* btn = new QPushButton;
+        QIcon icon(iconPath); 
+        if (!icon.isNull()) {
+            btn->setIcon(icon);
+            btn->setIconSize(ICON_SIZE);
+        } else {
+            btn->setText("?"); 
+        }
+        
+        btn->setFixedSize(BTN_SIZE, BTN_SIZE);
+        btn->setCheckable(true);
+        btn->setCursor(Qt::PointingHandCursor);
+        btn->setStyleSheet("background-color: transparent; border: 1px solid transparent; border-radius: 4px;");
+        
+        shapeGroup->addButton(btn, id);
+        toolbarLayout->addWidget(btn);
+        return btn;
+    };
 
-       // Разделитель
+    createShapeBtn("icons/line.png", 10);
+    createShapeBtn("icons/rectangle.png", 11);
+    createShapeBtn("icons/ellipse.png", 12);
+
+    // Разделитель
     auto* sep2 = new QFrame;
     sep2->setFrameShape(QFrame::VLine);
     sep2->setFrameShadow(QFrame::Sunken);
@@ -87,29 +108,24 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
     toolbarLayout->addWidget(sep2);
 
     // === РАЗМЕР КИСТИ (как RGB) ===
-    // Лейбл "Размер:"
     QLabel* sizeLabel = new QLabel("Размер:");
     sizeLabel->setFixedWidth(50);
     toolbarLayout->addWidget(sizeLabel);
     
-    // Слайдер
     brushSizeSlider = new QSlider(Qt::Horizontal);
     brushSizeSlider->setRange(1, 100);
     brushSizeSlider->setValue(1);
     brushSizeSlider->setFixedWidth(80);
     toolbarLayout->addWidget(brushSizeSlider);
     
-    // Отступ
     toolbarLayout->addSpacing(5);
     
-    // QSpinBox
     brushSizeSpinBox = new QSpinBox;
     brushSizeSpinBox->setRange(1, 100);
     brushSizeSpinBox->setValue(1);
     brushSizeSpinBox->setFixedWidth(80);
     toolbarLayout->addWidget(brushSizeSpinBox);
     
-    // СВЯЗЫВАЕМ
     connect(brushSizeSlider, &QSlider::valueChanged, this, &MainWindow::onBrushSizeChanged);
     connect(brushSizeSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::onBrushSizeChanged);
 
@@ -304,7 +320,6 @@ void MainWindow::onShapeClicked(int id) {
 void MainWindow::onBrushSizeChanged(int size) {
     canvasWidget->setBrushSize(size);
     
-    // Синхронизируем как RGB
     brushSizeSpinBox->blockSignals(true);
     brushSizeSlider->blockSignals(true);
     
@@ -358,7 +373,7 @@ void MainWindow::onLoadClicked() {
 
 void MainWindow::onClearClicked() {
     if (QMessageBox::question(this, "Подтверждение", "Очистить холст?") == QMessageBox::Yes) {
-        canvasWidget->clearCanvas();  // ← Вызываем оптимизированный метод
+        canvasWidget->clearCanvas();
     }
 }
 

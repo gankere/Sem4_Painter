@@ -109,11 +109,7 @@ ShapeTool::ShapeTool(const QColor& c, Type type, int s)
     : color(c), shapeType(type), size(s), isDragging(false) {}
 
 void ShapeTool::use(ICanvas& canvas, int x, int y) {
-    if (!isDragging) {
-        startShape(x, y);
-    } else {
-        drawShape(canvas, x, y);
-    }
+    (void)canvas; (void)x; (void)y;
 }
 
 std::string ShapeTool::getToolName() const {
@@ -200,70 +196,44 @@ void ShapeTool::drawEllipse(ICanvas& canvas, int x1, int y1, int x2, int y2) {
     int radiusX = std::abs(x2 - x1) / 2;
     int radiusY = std::abs(y2 - y1) / 2;
 
-    if (radiusX == 0 || radiusY == 0) return;
-
-    int x = 0, y = radiusY;
-    int d1 = (radiusY * radiusY) - (radiusX * radiusX * radiusY) + (0.25 * radiusX * radiusX);
-    int dx = 2 * radiusY * radiusY * x;
-    int dy = 2 * radiusX * radiusY * y;
-
-    while (dx < dy) {
-        int brushRadius = size / 2;
-        for (int i = -brushRadius; i <= brushRadius; ++i) {
-            for (int j = -brushRadius; j <= brushRadius; ++j) {
-                if (i*i + j*j <= brushRadius*brushRadius) {
-                    canvas.setPixel(centerX + x + i, centerY + y + j, Pixel(color));
-                    canvas.setPixel(centerX - x + i, centerY + y + j, Pixel(color));
-                    canvas.setPixel(centerX + x + i, centerY - y + j, Pixel(color));
-                    canvas.setPixel(centerX - x + i, centerY - y + j, Pixel(color));
-                }
-            }
+    if (radiusX == 0 && radiusY == 0) return;
+    
+    // Если один из радиусов очень маленький — рисуем линию или точку
+    if (radiusX == 0) {
+        for (int y = centerY - radiusY; y <= centerY + radiusY; ++y) {
+            canvas.setPixel(centerX, y, Pixel(color));
         }
-
-        if (d1 < 0) {
-            x++;
-            dx = dx + 2 * radiusY * radiusY;
-            d1 = d1 + dx + radiusY * radiusY;
-        } else {
-            x++;
-            y--;
-            dx = dx + 2 * radiusY * radiusY;
-            dy = dy - 2 * radiusX * radiusX;
-            d1 = d1 + dx - dy + radiusY * radiusY;
+        return;
+    }
+    if (radiusY == 0) {
+        for (int x = centerX - radiusX; x <= centerX + radiusX; ++x) {
+            canvas.setPixel(x, centerY, Pixel(color));
         }
+        return;
     }
 
-    int d2 = ((radiusY * radiusY) * ((x + 0.5) * (x + 0.5))) + 
-             ((radiusX * radiusX) * ((y - 1) * (y - 1))) - 
-             (radiusX * radiusX * radiusY * radiusY);
-
-    while (y >= 0) {
-        int brushRadius = size / 2;
-        for (int i = -brushRadius; i <= brushRadius; ++i) {
-            for (int j = -brushRadius; j <= brushRadius; ++j) {
-                if (i*i + j*j <= brushRadius*brushRadius) {
-                    canvas.setPixel(centerX + x + i, centerY + y + j, Pixel(color));
-                    canvas.setPixel(centerX - x + i, centerY + y + j, Pixel(color));
-                    canvas.setPixel(centerX + x + i, centerY - y + j, Pixel(color));
-                    canvas.setPixel(centerX - x + i, centerY - y + j, Pixel(color));
+    // Упрощённый алгоритм эллипса
+    int brushRadius = size / 2;
+    
+    // Рисуем эллипс через параметризацию
+    int steps = std::max(radiusX, radiusY) * 8; // Достаточно шагов для плавности
+    if (steps < 100) steps = 100;
+    
+    for (int i = 0; i < steps; ++i) {
+        double angle = 2.0 * 3.14159265359 * i / steps;
+        int x = centerX + static_cast<int>(radiusX * std::cos(angle) + 0.5);
+        int y = centerY + static_cast<int>(radiusY * std::sin(angle) + 0.5);
+        
+        // Рисуем кистью в этой точке
+        for (int dy = -brushRadius; dy <= brushRadius; ++dy) {
+            for (int dx = -brushRadius; dx <= brushRadius; ++dx) {
+                if (dx*dx + dy*dy <= brushRadius*brushRadius) {
+                    canvas.setPixel(x + dx, y + dy, Pixel(color));
                 }
             }
-        }
-
-        if (d2 > 0) {
-            y--;
-            dy = dy - 2 * radiusX * radiusX;
-            d2 = d2 + radiusX * radiusX - dy;
-        } else {
-            y--;
-            x++;
-            dx = dx + 2 * radiusY * radiusY;
-            dy = dy - 2 * radiusX * radiusX;
-            d2 = d2 + dx - dy + radiusX * radiusX;
         }
     }
 }
-
 // === Factories ===
 BrushFactory::BrushFactory(const QColor& c, int s) : color(c), size(s) {}
 
