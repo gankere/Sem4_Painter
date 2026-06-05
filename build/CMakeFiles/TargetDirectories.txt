@@ -1,0 +1,5 @@
+C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/PainterQt.dir
+C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/edit_cache.dir
+C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/rebuild_cache.dir
+C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/PainterQt_autogen_timestamp_deps.dir
+C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/PainterQt_autogen.dir

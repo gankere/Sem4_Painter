@@ -1,0 +1,11 @@
+# ninja log v7
+30	306	8022854555777161	PainterQt_autogen/timestamp	ff7068cafbd697a6
+30	306	8022854555777161	PainterQt_autogen/mocs_compilation.cpp	ff7068cafbd697a6
+30	306	8022854555777161	C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/PainterQt_autogen/timestamp	ff7068cafbd697a6
+30	306	8022854555777161	C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/PainterQt_autogen/mocs_compilation.cpp	ff7068cafbd697a6
+319	2687	8022854558667085	CMakeFiles/PainterQt.dir/domain.cpp.obj	d27c9c7f07634ccb
+1121	6498	8022851574533810	CMakeFiles/PainterQt.dir/main.cpp.obj	39b5ac085e137249
+1113	6600	8022851574455074	CMakeFiles/PainterQt.dir/PainterQt_autogen/mocs_compilation.cpp.obj	8ebf993d7283e820
+1139	6742	8022851574716883	CMakeFiles/PainterQt.dir/qtcanvaswidget.cpp.obj	bdd494cb813df6ff
+307	4571	8022854558530648	CMakeFiles/PainterQt.dir/mainwindow.cpp.obj	9f4646d4587b6da3
+4571	4862	8022854601178176	PainterQt.exe	afacb931b047b1cf
