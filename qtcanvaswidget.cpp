@@ -18,11 +18,14 @@ QtCanvasWidget::QtCanvasWidget(ICanvas& canvas, QWidget* parent)
       canvasCache(),
       cacheDirty(true),
       shapeStartCanvas(),
-      hasPreview(false)  // ← Добавь
+      previewCache(),
+      hasPreview(false)
 {
     setFocusPolicy(Qt::StrongFocus);
     setFocus();
     setMouseTracking(true);
+
+    updateCanvasSize();
 }
 
 QtCanvasWidget::~QtCanvasWidget() {
@@ -47,6 +50,15 @@ void QtCanvasWidget::setBrushSize(int size) {
     brushSize = size;
     if (activeTool) activeTool->setSize(size);
     if (currentFactory) currentFactory->setSize(size);
+}
+
+void QtCanvasWidget::setPixelSize(int size) {
+    if (size == pixelSize) return;
+    
+    pixelSize = size;
+    updateCanvasSize();
+    cacheDirty = true;
+    update();
 }
 
 void QtCanvasWidget::updateCache() {
@@ -95,12 +107,10 @@ void QtCanvasWidget::paintEvent(QPaintEvent*) {
     QPainter painter(this);
     painter.drawPixmap(0, 0, canvasCache);
     
-    // ← Рисуем preview поверх кэша
     if (hasPreview && !previewCache.isNull()) {
         painter.drawPixmap(0, 0, previewCache);
     }
     
-    // Рисуем текст
     QFont font;
     font.setPointSize(12);
     painter.setFont(font);
@@ -155,13 +165,12 @@ void QtCanvasWidget::mousePressEvent(QMouseEvent* event) {
         return;
     }
 
-    // ← ПРОВЕРКА НА ВЕДРО
     BucketTool* bucketTool = dynamic_cast<BucketTool*>(activeTool);
     if (bucketTool) {
         canvas.startBatch();
-        bucketTool->use(canvas, x, y);  // ← Вызываем floodFill
+        bucketTool->use(canvas, x, y);
         canvas.endBatch();
-        cacheDirty = true;  // ← Пересоздаём кэш
+        cacheDirty = true;
         update();
         return;
     }
@@ -173,7 +182,6 @@ void QtCanvasWidget::mousePressEvent(QMouseEvent* event) {
         isDrawing = true;
         hasPreview = false;
     } else {
-        // Для кисти/ластика
         isDrawing = true;
         lastPos = event->pos();
         canvas.startBatch();
@@ -192,7 +200,6 @@ void QtCanvasWidget::mousePressEvent(QMouseEvent* event) {
 void QtCanvasWidget::mouseMoveEvent(QMouseEvent* event) {
     if (!isDrawing) return;
     
-    // ← Ведро не должно рисовать при движении
     BucketTool* bucketTool = dynamic_cast<BucketTool*>(activeTool);
     if (bucketTool) return;
     
@@ -215,7 +222,6 @@ void QtCanvasWidget::mouseReleaseEvent(QMouseEvent* event) {
     if (event->button() != Qt::LeftButton) return;
     isDrawing = false;
     
-    // ← Ведро уже нарисовало в mousePressEvent
     BucketTool* bucketTool = dynamic_cast<BucketTool*>(activeTool);
     if (bucketTool) return;
     
@@ -285,8 +291,7 @@ void QtCanvasWidget::drawPreview(const QPoint& startCanvas, const QPoint& curren
     int penWidth = brushSize * pixelSize;
     
     QPen pen(activeToolColor, penWidth);
-    pen.setJoinStyle(Qt::MiterJoin);  // ← Прямые углы (или Qt::BevelJoin)
-    // pen.setCapStyle(Qt::FlatCap);      // ← Плоские концы для линий
+    pen.setJoinStyle(Qt::MiterJoin);
     pen.setCapStyle(Qt::RoundCap);
 
     p.setPen(pen);

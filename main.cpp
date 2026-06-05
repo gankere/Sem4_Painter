@@ -5,7 +5,7 @@
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
 
-    Canvas canvas(1024, 1024); // размер сетки
+    Canvas canvas(200, 200); // размер сетки
 
     MainWindow window(canvas);
     window.setWindowTitle("Pixel Editor Qt");

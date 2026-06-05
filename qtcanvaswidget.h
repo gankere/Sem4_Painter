@@ -16,6 +16,8 @@ public:
     
     void setActiveColor(const QColor& color);
     void setBrushSize(int size);
+    void setPixelSize(int size);        // ← ДОБАВИТЬ
+    void updateCanvasSize();            // ← ДОБАВИТЬ
     void showTextDialog(const QPoint& pos);
 
 protected:
@@ -52,10 +54,10 @@ private:
     void drawLine(const QPoint& from, const QPoint& to);
     void drawDirectlyOnCache(int canvasX, int canvasY, const QColor& color, int brushSize);
     
-    // Для фигур — первая точка (в координатах холста)
+    // Для фигур
     QPoint shapeStartCanvas;
     
-     // ← Для preview фигур
+    // Для preview
     QPixmap previewCache;
     bool hasPreview;
     void drawPreview(const QPoint& startCanvas, const QPoint& currentCanvas);

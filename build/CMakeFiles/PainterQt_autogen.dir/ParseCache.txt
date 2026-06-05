@@ -385,10 +385,12 @@ C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/mainwindow.h
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/QLabel
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/QMainWindow
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/QPushButton
+ mdp:C:/msys64/mingw64/include/qt6/QtWidgets/QScrollArea
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/QSlider
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/QSpinBox
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/QWidget
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qabstractbutton.h
+ mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qabstractscrollarea.h
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qabstractslider.h
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qabstractspinbox.h
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qbuttongroup.h
@@ -396,6 +398,7 @@ C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/mainwindow.h
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qlabel.h
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qmainwindow.h
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qpushbutton.h
+ mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qscrollarea.h
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qsizepolicy.h
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qslider.h
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qspinbox.h

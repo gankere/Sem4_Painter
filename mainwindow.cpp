@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QGridLayout>
 #include <QLabel>
+#include <QScrollArea>
 
 MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
     : QMainWindow(parent), canvas(canvas), activeColor(Qt::black) {
@@ -22,19 +23,19 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
     QVBoxLayout* leftLayout = new QVBoxLayout(leftPart);
     leftLayout->setContentsMargins(0,0,0,0);
     leftLayout->setSpacing(0);
-    
+
     // Верхняя панель
     QWidget* topToolbar = new QWidget;
     QHBoxLayout* toolbarLayout = new QHBoxLayout(topToolbar);
     toolbarLayout->setContentsMargins(5, 5, 5, 5);
     toolbarLayout->setSpacing(5);
-    
+
     const int BTN_SIZE = 36;
     const QSize ICON_SIZE(24, 24);
 
     toolGroup = new QButtonGroup(this);
     toolGroup->setExclusive(true);
-    
+
     // Лямбда для кнопок ИНСТРУМЕНТОВ (кисть, ластик, ведро, текст)
     auto createToolBtn = [&](const QString& iconPath, int id, bool checked = false) {
         auto* btn = new QPushButton;
@@ -156,11 +157,25 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
 
     leftLayout->addWidget(topToolbar);
     
-    canvasWidget = new QtCanvasWidget(canvas, this);
+    // === КОНТЕЙНЕР ДЛЯ ХОЛСТА С СЕРЫМ ФОНОМ И СКРОЛЛЕРАМИ ===
+    QWidget* canvasContainer = new QWidget;
+    canvasContainer->setStyleSheet("background-color: #c6cfd8;");
+    QHBoxLayout* containerLayout = new QHBoxLayout(canvasContainer);
+    containerLayout->setContentsMargins(0, 0, 0, 0);
+    
+    QScrollArea* scrollArea = new QScrollArea;
+    scrollArea->setStyleSheet("background-color: #bbccde; border: none;");
+    scrollArea->setWidgetResizable(false);  // ← ВАЖНО: не растягивать виджет
+    
+    canvasWidget = new QtCanvasWidget(canvas, scrollArea);
     canvasWidget->setMinimumSize(800, 600);
     canvasWidget->setFocusPolicy(Qt::StrongFocus);
     canvasWidget->setFocus();
-    leftLayout->addWidget(canvasWidget, 1);
+    
+    scrollArea->setWidget(canvasWidget);
+    containerLayout->addWidget(scrollArea, 1);
+    
+    leftLayout->addWidget(canvasContainer, 1);
     
     mainLayout->addWidget(leftPart, 1);
     
@@ -248,8 +263,15 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
         grid->addWidget(btn, idx / 4, idx % 4);
         idx++;
     }
-    palLayout->addLayout(grid);
+        palLayout->addLayout(grid);
     palLayout->addStretch();
+    
+    // ← РАЗМЕР ХОЛСТА
+    canvasSizeLabel = new QLabel;
+    canvasSizeLabel->setAlignment(Qt::AlignCenter);
+    canvasSizeLabel->setStyleSheet("background-color: #dde9fa; padding: 5px; border-radius: 4px; font-weight: bold;");
+    updateCanvasSizeLabel();  // Обновляем текст
+    palLayout->addWidget(canvasSizeLabel);
     
     mainLayout->addWidget(rightPalette);
     
@@ -374,6 +396,7 @@ void MainWindow::onLoadClicked() {
 void MainWindow::onClearClicked() {
     if (QMessageBox::question(this, "Подтверждение", "Очистить холст?") == QMessageBox::Yes) {
         canvasWidget->clearCanvas();
+        updateCanvasSizeLabel();  // ← Добавь
     }
 }
 
@@ -387,4 +410,17 @@ void MainWindow::adjustBrightness(int value) {
     
     QColor newColor = QColor::fromHsv(h, s, newV);
     onColorChanged(newColor);
+}
+
+void QtCanvasWidget::updateCanvasSize() {
+    int newWidth = canvas.getWidth() * pixelSize;
+    int newHeight = canvas.getHeight() * pixelSize;
+    setFixedSize(newWidth, newHeight);  // ← Фиксированный размер виджета
+    cacheDirty = true;
+}
+
+void MainWindow::updateCanvasSizeLabel() {
+    int width = canvas.getWidth();
+    int height = canvas.getHeight();
+    canvasSizeLabel->setText(QString("%1 x %2 px").arg(width).arg(height));
 }

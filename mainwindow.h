@@ -5,6 +5,7 @@
 #include <QSpinBox>
 #include <QLabel>
 #include <QButtonGroup>
+#include <QScrollArea>
 #include "qtcanvaswidget.h"
 #include "domain.h"
 
@@ -41,7 +42,10 @@ private:
     QColor activeColor;
     
     QSlider* brushSizeSlider;
-    QSpinBox* brushSizeSpinBox;  // ← Как R, G, B
+    QSpinBox* brushSizeSpinBox;
+
+    QLabel* canvasSizeLabel;
     
     void updateActiveToolStyle(QAbstractButton* btn);
+    void updateCanvasSizeLabel();
 };
