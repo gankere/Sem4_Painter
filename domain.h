@@ -1,4 +1,5 @@
 #pragma once
+#include <queue> 
 #include <vector>
 #include <string>
 #include <stack>
@@ -180,6 +181,33 @@ private:
     
 public:
     ShapeFactory(const QColor& c, ShapeTool::Type t, int s = 1);
+    ITool* create() override;
+    std::string getToolName() const override;
+    void setColor(const QColor& c) override;
+    void setSize(int s) override;
+};
+
+class BucketTool : public ITool {
+private:
+    QColor color;
+    
+public:
+    BucketTool(const QColor& c = Qt::black);
+    void use(ICanvas& canvas, int x, int y) override;
+    std::string getToolName() const override;
+    void setColor(const QColor& c) override;
+    void setSize(int s) override;
+    
+private:
+    void floodFill(ICanvas& canvas, int startX, int startY, const QColor& fillColor);
+};
+
+class BucketFactory : public IToolFactory {
+private:
+    QColor color;
+    
+public:
+    BucketFactory(const QColor& c = Qt::black);
     ITool* create() override;
     std::string getToolName() const override;
     void setColor(const QColor& c) override;

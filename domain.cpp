@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
+
 // === Canvas ===
 Canvas::Canvas(int width, int height) 
     : w(width), h(height), isUndoing(false), isBatching(false) {
@@ -14,7 +15,7 @@ void Canvas::setPixel(int x, int y, Pixel p) {
     if (x >= 0 && x < w && y >= 0 && y < h) {
         if (!isUndoing) {
             // ← Ограничиваем историю 10000 шагов
-            if (undoHistory.size() > 1000) {
+            if (undoHistory.size() > 10000) {
                 std::stack<UndoStep> temp;
                 std::swap(undoHistory, temp);
             }
@@ -297,3 +298,64 @@ std::string ShapeFactory::getToolName() const { return "Shape"; }
 
 void ShapeFactory::setColor(const QColor& c) { color = c; }
 void ShapeFactory::setSize(int s) { size = s; }
+
+// === BucketTool ===
+BucketTool::BucketTool(const QColor& c) : color(c) {}
+
+void BucketTool::use(ICanvas& canvas, int x, int y) {
+    floodFill(canvas, x, y, color);
+}
+
+std::string BucketTool::getToolName() const { return "Bucket"; }
+
+void BucketTool::setColor(const QColor& c) { color = c; }
+void BucketTool::setSize(int) {}  // Ведро не использует размер
+
+void BucketTool::floodFill(ICanvas& canvas, int startX, int startY, const QColor& fillColor) {
+    int width = canvas.getWidth();
+    int height = canvas.getHeight();
+    
+    // Получаем цвет целевого пикселя
+    QColor targetColor = canvas.getPixel(startX, startY).color;
+    
+    // Если цвета одинаковые — ничего не делаем
+    if (targetColor == fillColor) return;
+    
+    // Используем queue для итеративного flood fill
+    std::queue<std::pair<int, int>> pixels;
+    pixels.push({startX, startY});
+    
+    while (!pixels.empty()) {
+        auto [x, y] = pixels.front();
+        pixels.pop();
+        
+        // Проверяем границы
+        if (x < 0 || x >= width || y < 0 || y >= height) continue;
+        
+        Pixel currentPixel = canvas.getPixel(x, y);
+        
+        // Если цвет не совпадает с целевым — пропускаем
+        if (currentPixel.color != targetColor) continue;
+        
+        // Закрашиваем пиксель
+        canvas.setPixel(x, y, Pixel(fillColor));
+        
+        // Добавляем соседей
+        pixels.push({x + 1, y});
+        pixels.push({x - 1, y});
+        pixels.push({x, y + 1});
+        pixels.push({x, y - 1});
+    }
+}
+
+// === BucketFactory ===
+BucketFactory::BucketFactory(const QColor& c) : color(c) {}
+
+ITool* BucketFactory::create() { 
+    return new BucketTool(color); 
+}
+
+std::string BucketFactory::getToolName() const { return "Bucket"; }
+
+void BucketFactory::setColor(const QColor& c) { color = c; }
+void BucketFactory::setSize(int) {}

@@ -88,6 +88,7 @@ C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/PainterQt_autogen/EW
   C:/msys64/mingw64/include/c++/16.1.0/bits/stl_multiset.h \
   C:/msys64/mingw64/include/c++/16.1.0/bits/stl_numeric.h \
   C:/msys64/mingw64/include/c++/16.1.0/bits/stl_pair.h \
+  C:/msys64/mingw64/include/c++/16.1.0/bits/stl_queue.h \
   C:/msys64/mingw64/include/c++/16.1.0/bits/stl_raw_storage_iter.h \
   C:/msys64/mingw64/include/c++/16.1.0/bits/stl_relops.h \
   C:/msys64/mingw64/include/c++/16.1.0/bits/stl_set.h \
@@ -151,6 +152,7 @@ C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/PainterQt_autogen/EW
   C:/msys64/mingw64/include/c++/16.1.0/pstl/execution_defs.h \
   C:/msys64/mingw64/include/c++/16.1.0/pstl/glue_numeric_defs.h \
   C:/msys64/mingw64/include/c++/16.1.0/pstl/pstl_config.h \
+  C:/msys64/mingw64/include/c++/16.1.0/queue \
   C:/msys64/mingw64/include/c++/16.1.0/ratio \
   C:/msys64/mingw64/include/c++/16.1.0/set \
   C:/msys64/mingw64/include/c++/16.1.0/stack \

@@ -259,16 +259,25 @@ void MainWindow::onToolClicked(int id) {
     
     IToolFactory* factory = nullptr;
     switch (id) {
-        case 0: factory = new BrushFactory(activeColor, brushSizeSlider->value()); break;
-        case 1: factory = new EraserFactory(brushSizeSlider->value()); break;
-        case 2: // Bucket - пока заглушка
-        case 3: // Text - пока заглушка
-            factory = new BrushFactory(activeColor, brushSizeSlider->value()); break;
+        case 0: // Кисть
+            factory = new BrushFactory(activeColor, brushSizeSlider->value());
+            canvasWidget->setActiveColor(activeColor);
+            break;
+        case 1: // Ластик
+            factory = new EraserFactory(brushSizeSlider->value());
+            break;
+        case 2: // ← ВЕДРО!
+            factory = new BucketFactory(activeColor);
+            canvasWidget->setActiveColor(activeColor);
+            break;
+        case 3: // Text - заглушка
+            factory = new BrushFactory(activeColor, brushSizeSlider->value());
+            canvasWidget->setActiveColor(activeColor);
+            break;
     }
     
     if (factory) {
         canvasWidget->updateFactory(factory);
-        canvasWidget->setActiveColor(activeColor);
         canvasWidget->setBrushSize(brushSizeSlider->value());
     }
 }
