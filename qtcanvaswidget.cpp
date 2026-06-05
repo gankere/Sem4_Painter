@@ -155,15 +155,25 @@ void QtCanvasWidget::mousePressEvent(QMouseEvent* event) {
         return;
     }
 
+    // ← ПРОВЕРКА НА ВЕДРО
+    BucketTool* bucketTool = dynamic_cast<BucketTool*>(activeTool);
+    if (bucketTool) {
+        canvas.startBatch();
+        bucketTool->use(canvas, x, y);  // ← Вызываем floodFill
+        canvas.endBatch();
+        cacheDirty = true;  // ← Пересоздаём кэш
+        update();
+        return;
+    }
+
     ShapeTool* shapeTool = dynamic_cast<ShapeTool*>(activeTool);
     
     if (shapeTool) {
-        // Для фигур: запоминаем первую точку
         shapeStartCanvas = QPoint(x, y);
         isDrawing = true;
         hasPreview = false;
     } else {
-        // Для кисти/ластика/ведра
+        // Для кисти/ластика
         isDrawing = true;
         lastPos = event->pos();
         canvas.startBatch();
@@ -182,17 +192,19 @@ void QtCanvasWidget::mousePressEvent(QMouseEvent* event) {
 void QtCanvasWidget::mouseMoveEvent(QMouseEvent* event) {
     if (!isDrawing) return;
     
+    // ← Ведро не должно рисовать при движении
+    BucketTool* bucketTool = dynamic_cast<BucketTool*>(activeTool);
+    if (bucketTool) return;
+    
     ShapeTool* shapeTool = dynamic_cast<ShapeTool*>(activeTool);
     if (shapeTool) {
-        // ← Для фигур: рисуем preview в реальном времени
         int x = std::clamp(event->pos().x() / pixelSize, 0, canvas.getWidth() - 1);
         int y = std::clamp(event->pos().y() / pixelSize, 0, canvas.getHeight() - 1);
         
         drawPreview(shapeStartCanvas, QPoint(x, y));
         hasPreview = true;
-        update();  // Перерисовываем экран
+        update();
     } else {
-        // Для кисти/ластика
         drawLine(lastPos, event->pos());
         lastPos = event->pos();
         update();
@@ -203,16 +215,17 @@ void QtCanvasWidget::mouseReleaseEvent(QMouseEvent* event) {
     if (event->button() != Qt::LeftButton) return;
     isDrawing = false;
     
+    // ← Ведро уже нарисовало в mousePressEvent
+    BucketTool* bucketTool = dynamic_cast<BucketTool*>(activeTool);
+    if (bucketTool) return;
+    
     ShapeTool* shapeTool = dynamic_cast<ShapeTool*>(activeTool);
     if (shapeTool) {
-        // Очищаем preview
         clearPreview();
         
-        // Берём вторую точку
         int x = std::clamp(event->pos().x() / pixelSize, 0, canvas.getWidth() - 1);
         int y = std::clamp(event->pos().y() / pixelSize, 0, canvas.getHeight() - 1);
         
-        // Рисуем фигуру на canvas
         canvas.startBatch();
         shapeTool->startShape(shapeStartCanvas.x(), shapeStartCanvas.y());
         shapeTool->drawShape(canvas, x, y);
