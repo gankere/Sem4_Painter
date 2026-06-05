@@ -55,5 +55,11 @@ private:
     // Для фигур — первая точка (в координатах холста)
     QPoint shapeStartCanvas;
     
+     // ← Для preview фигур
+    QPixmap previewCache;
+    bool hasPreview;
+    void drawPreview(const QPoint& startCanvas, const QPoint& currentCanvas);
+    void clearPreview();
+    
     QList<TextItem> textItems;
 };

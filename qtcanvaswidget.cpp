@@ -17,7 +17,8 @@ QtCanvasWidget::QtCanvasWidget(ICanvas& canvas, QWidget* parent)
       brushSize(1),
       canvasCache(),
       cacheDirty(true),
-      shapeStartCanvas()
+      shapeStartCanvas(),
+      hasPreview(false)  // ← Добавь
 {
     setFocusPolicy(Qt::StrongFocus);
     setFocus();
@@ -94,6 +95,11 @@ void QtCanvasWidget::paintEvent(QPaintEvent*) {
     QPainter painter(this);
     painter.drawPixmap(0, 0, canvasCache);
     
+    // ← Рисуем preview поверх кэша
+    if (hasPreview && !previewCache.isNull()) {
+        painter.drawPixmap(0, 0, previewCache);
+    }
+    
     // Рисуем текст
     QFont font;
     font.setPointSize(12);
@@ -143,7 +149,6 @@ void QtCanvasWidget::mousePressEvent(QMouseEvent* event) {
     int x = std::clamp(event->pos().x() / pixelSize, 0, canvas.getWidth() - 1);
     int y = std::clamp(event->pos().y() / pixelSize, 0, canvas.getHeight() - 1);
 
-    // Текст — открываем диалог и выходим
     TextTool* textTool = dynamic_cast<TextTool*>(activeTool);
     if (textTool) {
         showTextDialog(event->pos());
@@ -153,9 +158,10 @@ void QtCanvasWidget::mousePressEvent(QMouseEvent* event) {
     ShapeTool* shapeTool = dynamic_cast<ShapeTool*>(activeTool);
     
     if (shapeTool) {
-        // Для фигур: запоминаем ПЕРВУЮ точку (в координатах холста)
+        // Для фигур: запоминаем первую точку
         shapeStartCanvas = QPoint(x, y);
         isDrawing = true;
+        hasPreview = false;
     } else {
         // Для кисти/ластика/ведра
         isDrawing = true;
@@ -177,12 +183,20 @@ void QtCanvasWidget::mouseMoveEvent(QMouseEvent* event) {
     if (!isDrawing) return;
     
     ShapeTool* shapeTool = dynamic_cast<ShapeTool*>(activeTool);
-    if (shapeTool) return;  // Для фигур ничего не делаем при движении
-    
-    // Только для кисти/ластика
-    drawLine(lastPos, event->pos());
-    lastPos = event->pos();
-    update();
+    if (shapeTool) {
+        // ← Для фигур: рисуем preview в реальном времени
+        int x = std::clamp(event->pos().x() / pixelSize, 0, canvas.getWidth() - 1);
+        int y = std::clamp(event->pos().y() / pixelSize, 0, canvas.getHeight() - 1);
+        
+        drawPreview(shapeStartCanvas, QPoint(x, y));
+        hasPreview = true;
+        update();  // Перерисовываем экран
+    } else {
+        // Для кисти/ластика
+        drawLine(lastPos, event->pos());
+        lastPos = event->pos();
+        update();
+    }
 }
 
 void QtCanvasWidget::mouseReleaseEvent(QMouseEvent* event) {
@@ -191,11 +205,14 @@ void QtCanvasWidget::mouseReleaseEvent(QMouseEvent* event) {
     
     ShapeTool* shapeTool = dynamic_cast<ShapeTool*>(activeTool);
     if (shapeTool) {
-        // Берём ВТОРУЮ точку
+        // Очищаем preview
+        clearPreview();
+        
+        // Берём вторую точку
         int x = std::clamp(event->pos().x() / pixelSize, 0, canvas.getWidth() - 1);
         int y = std::clamp(event->pos().y() / pixelSize, 0, canvas.getHeight() - 1);
         
-        // Рисуем фигуру по двум точкам
+        // Рисуем фигуру на canvas
         canvas.startBatch();
         shapeTool->startShape(shapeStartCanvas.x(), shapeStartCanvas.y());
         shapeTool->drawShape(canvas, x, y);
@@ -241,4 +258,53 @@ void QtCanvasWidget::showTextDialog(const QPoint& pos) {
         textItems.append(item);
         update();
     }
+}
+
+void QtCanvasWidget::drawPreview(const QPoint& startCanvas, const QPoint& currentCanvas) {
+    if (previewCache.isNull() || previewCache.size() != canvasCache.size()) {
+        previewCache = QPixmap(canvasCache.size());
+    }
+    previewCache.fill(Qt::transparent);
+    
+    QPainter p(&previewCache);
+    p.setRenderHint(QPainter::Antialiasing, false);
+    
+    int penWidth = brushSize * pixelSize;
+    
+    QPen pen(activeToolColor, penWidth);
+    pen.setJoinStyle(Qt::MiterJoin);  // ← Прямые углы (или Qt::BevelJoin)
+    // pen.setCapStyle(Qt::FlatCap);      // ← Плоские концы для линий
+    pen.setCapStyle(Qt::RoundCap);
+
+    p.setPen(pen);
+    p.setBrush(Qt::NoBrush);
+    
+    ShapeTool* shapeTool = dynamic_cast<ShapeTool*>(activeTool);
+    if (!shapeTool) {
+        p.end();
+        return;
+    }
+    
+    QPoint startScreen = QPoint(startCanvas.x() * pixelSize, startCanvas.y() * pixelSize);
+    QPoint currentScreen = QPoint(currentCanvas.x() * pixelSize, currentCanvas.y() * pixelSize);
+    
+    switch (shapeTool->getShapeType()) {
+        case ShapeTool::Line:
+            p.drawLine(startScreen, currentScreen);
+            break;
+        case ShapeTool::Rect:
+            p.drawRect(QRect(startScreen, currentScreen).normalized());
+            break;
+        case ShapeTool::Ellipse:
+            p.drawEllipse(QRect(startScreen, currentScreen).normalized());
+            break;
+    }
+    p.end();
+}
+
+void QtCanvasWidget::clearPreview() {
+    if (!previewCache.isNull()) {
+        previewCache.fill(Qt::transparent);
+    }
+    hasPreview = false;
 }

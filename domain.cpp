@@ -15,7 +15,7 @@ void Canvas::setPixel(int x, int y, Pixel p) {
     if (x >= 0 && x < w && y >= 0 && y < h) {
         if (!isUndoing) {
             // ← Ограничиваем историю 10000 шагов
-            if (undoHistory.size() > 10000) {
+            if (undoHistory.size() > 10000000) {
                 std::stack<UndoStep> temp;
                 std::swap(undoHistory, temp);
             }
