@@ -78,7 +78,7 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
     createIconBtn("icons/rectangle.png", 11);
     createIconBtn("icons/ellipse.png", 12);
 
-    // Разделитель
+       // Разделитель
     auto* sep2 = new QFrame;
     sep2->setFrameShape(QFrame::VLine);
     sep2->setFrameShadow(QFrame::Sunken);
@@ -86,13 +86,32 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
     sep2->setStyleSheet("background-color: #ccc; margin: 0 5px;");
     toolbarLayout->addWidget(sep2);
 
-    // Размер кисти
-    toolbarLayout->addWidget(new QLabel("Размер:"));
+    // === РАЗМЕР КИСТИ (как RGB) ===
+    // Лейбл "Размер:"
+    QLabel* sizeLabel = new QLabel("Размер:");
+    sizeLabel->setFixedWidth(50);
+    toolbarLayout->addWidget(sizeLabel);
+    
+    // Слайдер
     brushSizeSlider = new QSlider(Qt::Horizontal);
-    brushSizeSlider->setRange(1, 50);
-    brushSizeSlider->setValue(1);  // ← Было 3, стало 1 (минимум)
-    brushSizeSlider->setFixedWidth(100);
+    brushSizeSlider->setRange(1, 100);
+    brushSizeSlider->setValue(1);
+    brushSizeSlider->setFixedWidth(80);
     toolbarLayout->addWidget(brushSizeSlider);
+    
+    // Отступ
+    toolbarLayout->addSpacing(5);
+    
+    // QSpinBox
+    brushSizeSpinBox = new QSpinBox;
+    brushSizeSpinBox->setRange(1, 100);
+    brushSizeSpinBox->setValue(1);
+    brushSizeSpinBox->setFixedWidth(80);
+    toolbarLayout->addWidget(brushSizeSpinBox);
+    
+    // СВЯЗЫВАЕМ
+    connect(brushSizeSlider, &QSlider::valueChanged, this, &MainWindow::onBrushSizeChanged);
+    connect(brushSizeSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::onBrushSizeChanged);
 
     // Файловые операции
     toolbarLayout->addStretch();
@@ -115,7 +134,6 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
     // Подключения
     connect(toolGroup, &QButtonGroup::buttonClicked, this, &MainWindow::onToolButtonClicked);
     connect(shapeGroup, &QButtonGroup::buttonClicked, this, &MainWindow::onShapeButtonClicked);
-    connect(brushSizeSlider, &QSlider::valueChanged, this, &MainWindow::onBrushSizeChanged);
     connect(saveBtn, &QPushButton::clicked, this, &MainWindow::onSaveClicked);
     connect(loadBtn, &QPushButton::clicked, this, &MainWindow::onLoadClicked);
     connect(clearBtn, &QPushButton::clicked, this, &MainWindow::onClearClicked);
@@ -276,6 +294,16 @@ void MainWindow::onShapeClicked(int id) {
 
 void MainWindow::onBrushSizeChanged(int size) {
     canvasWidget->setBrushSize(size);
+    
+    // Синхронизируем как RGB
+    brushSizeSpinBox->blockSignals(true);
+    brushSizeSlider->blockSignals(true);
+    
+    brushSizeSpinBox->setValue(size);
+    brushSizeSlider->setValue(size);
+    
+    brushSizeSpinBox->blockSignals(false);
+    brushSizeSlider->blockSignals(false);
 }
 
 void MainWindow::onColorChanged(const QColor& color) {
@@ -321,8 +349,7 @@ void MainWindow::onLoadClicked() {
 
 void MainWindow::onClearClicked() {
     if (QMessageBox::question(this, "Подтверждение", "Очистить холст?") == QMessageBox::Yes) {
-        canvas.clear();
-        canvasWidget->repaint();
+        canvasWidget->clearCanvas();  // ← Вызываем оптимизированный метод
     }
 }
 

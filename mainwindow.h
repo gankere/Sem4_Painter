@@ -3,6 +3,7 @@
 #include <QPushButton>
 #include <QSlider>
 #include <QSpinBox>
+#include <QLabel>
 #include <QButtonGroup>
 #include "qtcanvaswidget.h"
 #include "domain.h"
@@ -40,6 +41,7 @@ private:
     QColor activeColor;
     
     QSlider* brushSizeSlider;
+    QSpinBox* brushSizeSpinBox;  // ← Как R, G, B
     
     void updateActiveToolStyle(QAbstractButton* btn);
 };

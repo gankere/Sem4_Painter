@@ -13,12 +13,16 @@ Canvas::Canvas(int width, int height)
 void Canvas::setPixel(int x, int y, Pixel p) {
     if (x >= 0 && x < w && y >= 0 && y < h) {
         if (!isUndoing) {
+            // ← Ограничиваем историю 10000 шагов
+            if (undoHistory.size() > 1000) {
+                std::stack<UndoStep> temp;
+                std::swap(undoHistory, temp);
+            }
             undoHistory.push(UndoStep(x, y, data[y * w + x].color, false));
         }
         data[y * w + x] = p;
     }
 }
-
 Pixel Canvas::getPixel(int x, int y) const {
     if (x >= 0 && x < w && y >= 0 && y < h)
         return data[y * w + x];
@@ -52,8 +56,11 @@ void Canvas::undo() {
 }
 
 void Canvas::clear() {
-    std::fill(data.begin(), data.end(), Pixel());  // ← Прозрачные
-    undoHistory = std::stack<UndoStep>();
+    // ← МГНОВЕННАЯ очистка истории (swap работает за O(1))
+    std::stack<UndoStep>().swap(undoHistory);
+    
+    // ← Быстрая очистка данных
+    std::fill(data.begin(), data.end(), Pixel());
 }
 
 // === BrushTool ===

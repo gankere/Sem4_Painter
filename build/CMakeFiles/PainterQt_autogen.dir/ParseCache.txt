@@ -265,6 +265,7 @@ C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/mainwindow.h
  mdp:C:/msys64/mingw64/include/qt6/QtCore/qglobalstatic.h
  mdp:C:/msys64/mingw64/include/qt6/QtCore/qhash.h
  mdp:C:/msys64/mingw64/include/qt6/QtCore/qhashfunctions.h
+ mdp:C:/msys64/mingw64/include/qt6/QtCore/qiodevice.h
  mdp:C:/msys64/mingw64/include/qt6/QtCore/qiodevicebase.h
  mdp:C:/msys64/mingw64/include/qt6/QtCore/qiterable.h
  mdp:C:/msys64/mingw64/include/qt6/QtCore/qiterator.h
@@ -338,6 +339,7 @@ C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/mainwindow.h
  mdp:C:/msys64/mingw64/include/qt6/QtCore/qtversionchecks.h
  mdp:C:/msys64/mingw64/include/qt6/QtCore/qtypeinfo.h
  mdp:C:/msys64/mingw64/include/qt6/QtCore/qtypes.h
+ mdp:C:/msys64/mingw64/include/qt6/QtCore/qurl.h
  mdp:C:/msys64/mingw64/include/qt6/QtCore/qutf8stringview.h
  mdp:C:/msys64/mingw64/include/qt6/QtCore/qvariant.h
  mdp:C:/msys64/mingw64/include/qt6/QtCore/qvarlengtharray.h
@@ -360,12 +362,14 @@ C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/mainwindow.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qkeysequence.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qpaintdevice.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qpalette.h
+ mdp:C:/msys64/mingw64/include/qt6/QtGui/qpicture.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qpixelformat.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qpixmap.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qpolygon.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qregion.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qrgb.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qrgba64.h
+ mdp:C:/msys64/mingw64/include/qt6/QtGui/qtextdocument.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qtgui-config.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qtguiexports.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qtguiglobal.h
@@ -374,6 +378,7 @@ C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/mainwindow.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qwindowdefs.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qwindowdefs_win.h
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/QButtonGroup
+ mdp:C:/msys64/mingw64/include/qt6/QtWidgets/QLabel
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/QMainWindow
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/QPushButton
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/QSlider
@@ -383,6 +388,8 @@ C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/mainwindow.h
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qabstractslider.h
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qabstractspinbox.h
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qbuttongroup.h
+ mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qframe.h
+ mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qlabel.h
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qmainwindow.h
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qpushbutton.h
  mdp:C:/msys64/mingw64/include/qt6/QtWidgets/qsizepolicy.h

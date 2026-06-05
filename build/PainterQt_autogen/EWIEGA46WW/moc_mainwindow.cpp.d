@@ -260,6 +260,7 @@ C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/PainterQt_autogen/EW
   C:/msys64/mingw64/include/qt6/QtCore/qglobalstatic.h \
   C:/msys64/mingw64/include/qt6/QtCore/qhash.h \
   C:/msys64/mingw64/include/qt6/QtCore/qhashfunctions.h \
+  C:/msys64/mingw64/include/qt6/QtCore/qiodevice.h \
   C:/msys64/mingw64/include/qt6/QtCore/qiodevicebase.h \
   C:/msys64/mingw64/include/qt6/QtCore/qiterable.h \
   C:/msys64/mingw64/include/qt6/QtCore/qiterator.h \
@@ -333,6 +334,7 @@ C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/PainterQt_autogen/EW
   C:/msys64/mingw64/include/qt6/QtCore/qtversionchecks.h \
   C:/msys64/mingw64/include/qt6/QtCore/qtypeinfo.h \
   C:/msys64/mingw64/include/qt6/QtCore/qtypes.h \
+  C:/msys64/mingw64/include/qt6/QtCore/qurl.h \
   C:/msys64/mingw64/include/qt6/QtCore/qutf8stringview.h \
   C:/msys64/mingw64/include/qt6/QtCore/qvariant.h \
   C:/msys64/mingw64/include/qt6/QtCore/qvarlengtharray.h \
@@ -355,12 +357,14 @@ C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/PainterQt_autogen/EW
   C:/msys64/mingw64/include/qt6/QtGui/qkeysequence.h \
   C:/msys64/mingw64/include/qt6/QtGui/qpaintdevice.h \
   C:/msys64/mingw64/include/qt6/QtGui/qpalette.h \
+  C:/msys64/mingw64/include/qt6/QtGui/qpicture.h \
   C:/msys64/mingw64/include/qt6/QtGui/qpixelformat.h \
   C:/msys64/mingw64/include/qt6/QtGui/qpixmap.h \
   C:/msys64/mingw64/include/qt6/QtGui/qpolygon.h \
   C:/msys64/mingw64/include/qt6/QtGui/qregion.h \
   C:/msys64/mingw64/include/qt6/QtGui/qrgb.h \
   C:/msys64/mingw64/include/qt6/QtGui/qrgba64.h \
+  C:/msys64/mingw64/include/qt6/QtGui/qtextdocument.h \
   C:/msys64/mingw64/include/qt6/QtGui/qtgui-config.h \
   C:/msys64/mingw64/include/qt6/QtGui/qtguiexports.h \
   C:/msys64/mingw64/include/qt6/QtGui/qtguiglobal.h \
@@ -369,6 +373,7 @@ C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/PainterQt_autogen/EW
   C:/msys64/mingw64/include/qt6/QtGui/qwindowdefs.h \
   C:/msys64/mingw64/include/qt6/QtGui/qwindowdefs_win.h \
   C:/msys64/mingw64/include/qt6/QtWidgets/QButtonGroup \
+  C:/msys64/mingw64/include/qt6/QtWidgets/QLabel \
   C:/msys64/mingw64/include/qt6/QtWidgets/QMainWindow \
   C:/msys64/mingw64/include/qt6/QtWidgets/QPushButton \
   C:/msys64/mingw64/include/qt6/QtWidgets/QSlider \
@@ -378,6 +383,8 @@ C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/PainterQt_autogen/EW
   C:/msys64/mingw64/include/qt6/QtWidgets/qabstractslider.h \
   C:/msys64/mingw64/include/qt6/QtWidgets/qabstractspinbox.h \
   C:/msys64/mingw64/include/qt6/QtWidgets/qbuttongroup.h \
+  C:/msys64/mingw64/include/qt6/QtWidgets/qframe.h \
+  C:/msys64/mingw64/include/qt6/QtWidgets/qlabel.h \
   C:/msys64/mingw64/include/qt6/QtWidgets/qmainwindow.h \
   C:/msys64/mingw64/include/qt6/QtWidgets/qpushbutton.h \
   C:/msys64/mingw64/include/qt6/QtWidgets/qsizepolicy.h \

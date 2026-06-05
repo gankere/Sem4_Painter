@@ -32,6 +32,8 @@ private:
     bool isDrawing;
     QPoint lastPos;
     int pixelSize;
+    QColor activeToolColor;  // Текущий цвет инструмента
+    int brushSize;           // Текущий размер кисти
 
     // Кэш отрисовки
     QPixmap canvasCache;
@@ -40,7 +42,8 @@ private:
 
     void drawAtPosition(const QPoint& pos);
     void drawLine(const QPoint& from, const QPoint& to);
-    
+    void drawDirectlyOnCache(int canvasX, int canvasY, const QColor& color, int brushSize);
+
     // Для ShapeTool
     QPoint shapeStartPoint;
 };

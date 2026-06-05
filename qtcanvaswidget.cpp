@@ -4,12 +4,22 @@
 #include <algorithm>
 
 QtCanvasWidget::QtCanvasWidget(ICanvas& canvas, QWidget* parent)
-    : QWidget(parent), canvas(canvas), currentFactory(new BrushFactory()), 
-      activeTool(new BrushTool()), isDrawing(false), pixelSize(3), 
-      cacheDirty(true) 
+    : QWidget(parent), 
+      canvas(canvas), 
+      currentFactory(new BrushFactory()), 
+      activeTool(new BrushTool()), 
+      isDrawing(false), 
+      lastPos(),
+      pixelSize(3), 
+      activeToolColor(Qt::black),
+      brushSize(1),
+      canvasCache(),
+      cacheDirty(true),
+      shapeStartPoint()
 {
     setFocusPolicy(Qt::StrongFocus);
     setFocus();
+    setMouseTracking(true);  // ← ВАЖНО: отслеживание мыши даже без нажатия
 }
 
 QtCanvasWidget::~QtCanvasWidget() {
@@ -25,6 +35,7 @@ void QtCanvasWidget::updateFactory(IToolFactory* factory) {
 }
 
 void QtCanvasWidget::setActiveColor(const QColor& color) {
+    activeToolColor = color;
     if (activeTool) {
         activeTool->setColor(color);
     }
@@ -34,6 +45,7 @@ void QtCanvasWidget::setActiveColor(const QColor& color) {
 }
 
 void QtCanvasWidget::setBrushSize(int size) {
+    brushSize = size;
     if (activeTool) {
         activeTool->setSize(size);
     }
@@ -51,13 +63,38 @@ void QtCanvasWidget::updateCache() {
     
     for (int y = 0; y < canvas.getHeight(); ++y) {
         for (int x = 0; x < canvas.getWidth(); ++x) {
-            QColor color = canvas.getPixel(x, y).color;
-            if (color != Qt::white) {
-                p.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize, color);
+            Pixel px = canvas.getPixel(x, y);
+            if (!px.isEmpty()) {
+                p.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize, px.color);
             }
         }
     }
     cacheDirty = false;
+}
+
+void QtCanvasWidget::drawDirectlyOnCache(int canvasX, int canvasY, const QColor& color, int brushSize) {
+    if (canvasCache.isNull()) {
+        cacheDirty = true;
+        return;
+    }
+    
+    QPainter p(&canvasCache);
+    p.setPen(Qt::NoPen);
+    
+    int radius = brushSize / 2;
+    
+    // Точно так же как в BrushTool::use()
+    for (int dy = -radius; dy <= radius; ++dy) {
+        for (int dx = -radius; dx <= radius; ++dx) {
+            if (dx*dx + dy*dy <= radius*radius) {
+                int screenX = (canvasX + dx) * pixelSize;
+                int screenY = (canvasY + dy) * pixelSize;
+                p.fillRect(screenX, screenY, pixelSize, pixelSize, color);
+            }
+        }
+    }
+    
+    p.end();
 }
 
 void QtCanvasWidget::paintEvent(QPaintEvent* event) {
@@ -85,14 +122,23 @@ void QtCanvasWidget::drawLine(const QPoint& from, const QPoint& to) {
     int sx = (x1 < x2) ? 1 : -1, sy = (y1 < y2) ? 1 : -1;
     int err = dx - dy;
 
+    // ← ДОБАВИТЬ: определяем цвет
+    QColor drawColor = Qt::white;  // Ластик
+    EraserTool* eraser = dynamic_cast<EraserTool*>(activeTool);
+    if (!eraser) {
+        drawColor = activeToolColor;  // Кисть
+    }
+
     while (true) {
         activeTool->use(canvas, x1, y1);
+        drawDirectlyOnCache(x1, y1, drawColor, brushSize);  // ← Используем drawColor
+        
         if (x1 == x2 && y1 == y2) break;
         int e2 = 2 * err;
         if (e2 > -dy) { err -= dy; x1 += sx; }
         if (e2 < dx) { err += dx; y1 += sy; }
     }
-    cacheDirty = true;
+    cacheDirty = false;
 }
 
 void QtCanvasWidget::mousePressEvent(QMouseEvent* event) {
@@ -103,17 +149,28 @@ void QtCanvasWidget::mousePressEvent(QMouseEvent* event) {
         int x = std::clamp(event->pos().x() / pixelSize, 0, canvas.getWidth() - 1);
         int y = std::clamp(event->pos().y() / pixelSize, 0, canvas.getHeight() - 1);
 
-        // Проверяем, является ли инструмент ShapeTool
         ShapeTool* shapeTool = dynamic_cast<ShapeTool*>(activeTool);
         if (shapeTool) {
             shapeStartPoint = QPoint(x, y);
             canvas.startBatch();
             shapeTool->startShape(x, y);
+            cacheDirty = true;
         } else {
             canvas.startBatch();
-            drawAtPosition(event->pos());
+            activeTool->use(canvas, x, y);
+            
+            // ← ДОБАВИТЬ: определяем цвет
+            QColor drawColor = Qt::white;
+            EraserTool* eraser = dynamic_cast<EraserTool*>(activeTool);
+            if (!eraser) {
+                drawColor = activeToolColor;
+            }
+            
+            drawDirectlyOnCache(x, y, drawColor, brushSize);  // ← Используем drawColor
+            cacheDirty = false;
         }
-        repaint();
+        
+        update();
     }
 }
 
@@ -121,19 +178,22 @@ void QtCanvasWidget::mouseMoveEvent(QMouseEvent* event) {
     if (isDrawing) {
         ShapeTool* shapeTool = dynamic_cast<ShapeTool*>(activeTool);
         if (shapeTool) {
-            // Для фигур: откатываем предыдущий preview и рисуем новый
+            // Для фигур - полная перерисовка (медленно, но правильно)
             canvas.undo();
             canvas.startBatch();
             
             int x = std::clamp(event->pos().x() / pixelSize, 0, canvas.getWidth() - 1);
             int y = std::clamp(event->pos().y() / pixelSize, 0, canvas.getHeight() - 1);
             shapeTool->drawShape(canvas, x, y);
+            cacheDirty = true;
         } else {
-            // Для обычных инструментов: рисуем линию
+            // ← Для кисти/ластика: рисуем линию и сразу на кэше
             drawLine(lastPos, event->pos());
             lastPos = event->pos();
         }
-        repaint();
+        
+        // ← ВАЖНО: update() вместо repaint()
+        update();
     }
 }
 
@@ -150,21 +210,23 @@ void QtCanvasWidget::mouseReleaseEvent(QMouseEvent* event) {
         }
         
         canvas.endBatch();
-        repaint();
+        cacheDirty = true;  // На всякий случай пересоздадим кэш
+        update();
     }
 }
 
 void QtCanvasWidget::clearCanvas() {
     canvas.clear();
-    cacheDirty = true;
-    repaint();
+    canvasCache.fill(Qt::white);
+    cacheDirty = false;
+    update();  // ← update() вместо repaint()
 }
 
 void QtCanvasWidget::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Z && (event->modifiers() & Qt::ControlModifier)) {
         canvas.undo();
         cacheDirty = true;
-        repaint();
+        update();
         return;
     }
     QWidget::keyPressEvent(event);
