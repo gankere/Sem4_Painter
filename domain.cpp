@@ -359,3 +359,51 @@ std::string BucketFactory::getToolName() const { return "Bucket"; }
 
 void BucketFactory::setColor(const QColor& c) { color = c; }
 void BucketFactory::setSize(int) {}
+
+// === TextTool ===
+TextTool::TextTool(const QColor& c, int size) : color(c), fontSize(size) {}
+
+void TextTool::use(ICanvas& canvas, int x, int y) {
+    // TextTool использует drawText вместо use
+    (void)canvas; (void)x; (void)y;
+}
+
+std::string TextTool::getToolName() const { return "Text"; }
+
+void TextTool::setColor(const QColor& c) { color = c; }
+void TextTool::setSize(int s) { fontSize = s; }
+
+void TextTool::drawText(ICanvas& canvas, int x, int y, const QString& text) {
+    // Простая отрисовка текста попиксельно
+    // В реальном приложении лучше использовать QPainter
+    QColor textColor = color;
+    
+    // Для простоты рисуем каждый символ как набор пикселей
+    // Это базовая реализация
+    int xPos = x;
+    for (QChar ch : text) {
+        // Рисуем простой прямоугольник для каждого символа
+        // (в реальной версии нужно использовать шрифт)
+        for (int i = 0; i < 8; ++i) {
+            for (int j = 0; j < 10; ++j) {
+                // Простая заглушка — рисуем рамку символа
+                if (i == 0 || i == 7 || j == 0 || j == 9) {
+                    canvas.setPixel(xPos + i, y + j, Pixel(textColor));
+                }
+            }
+        }
+        xPos += 10; // Отступ между символами
+    }
+}
+
+// === TextFactory ===
+TextFactory::TextFactory(const QColor& c) : color(c) {}
+
+ITool* TextFactory::create() { 
+    return new TextTool(color); 
+}
+
+std::string TextFactory::getToolName() const { return "Text"; }
+
+void TextFactory::setColor(const QColor& c) { color = c; }
+void TextFactory::setSize(int) {}

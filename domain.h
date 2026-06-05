@@ -5,6 +5,7 @@
 #include <stack>
 #include <QColor>
 #include <QPoint>
+#include <QString>
 
 // ============================================
 // Шаг отката
@@ -208,6 +209,33 @@ private:
     
 public:
     BucketFactory(const QColor& c = Qt::black);
+    ITool* create() override;
+    std::string getToolName() const override;
+    void setColor(const QColor& c) override;
+    void setSize(int s) override;
+};
+
+class TextTool : public ITool {
+private:
+    QColor color;
+    int fontSize;
+    
+public:
+    TextTool(const QColor& c = Qt::black, int size = 12);
+    void use(ICanvas& canvas, int x, int y) override;
+    std::string getToolName() const override;
+    void setColor(const QColor& c) override;
+    void setSize(int s) override;
+    
+    void drawText(ICanvas& canvas, int x, int y, const QString& text);
+};
+
+class TextFactory : public IToolFactory {
+private:
+    QColor color;
+    
+public:
+    TextFactory(const QColor& c = Qt::black);
     ITool* create() override;
     std::string getToolName() const override;
     void setColor(const QColor& c) override;

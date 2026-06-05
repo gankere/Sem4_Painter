@@ -266,12 +266,12 @@ void MainWindow::onToolClicked(int id) {
         case 1: // Ластик
             factory = new EraserFactory(brushSizeSlider->value());
             break;
-        case 2: // ← ВЕДРО!
+        case 2: // ВЕДРО!
             factory = new BucketFactory(activeColor);
             canvasWidget->setActiveColor(activeColor);
             break;
-        case 3: // Text - заглушка
-            factory = new BrushFactory(activeColor, brushSizeSlider->value());
+        case 3: // ТЕКСТ!
+            factory = new TextFactory(activeColor);
             canvasWidget->setActiveColor(activeColor);
             break;
     }

@@ -1,6 +1,8 @@
 #pragma once
 #include <QWidget>
 #include <QPixmap>
+#include <QList>      // ← Добавь
+#include <QString>    // ← Добавь
 #include "domain.h"
 
 class QtCanvasWidget : public QWidget {
@@ -14,6 +16,7 @@ public:
     
     void setActiveColor(const QColor& color);
     void setBrushSize(int size);
+    void showTextDialog(const QPoint& pos);
 
 protected:
     void paintEvent(QPaintEvent* event) override;
@@ -26,6 +29,13 @@ signals:
     void pixelClicked(int x, int y);
 
 private:
+    // ← Структура для текста ВНУТРИ класса
+    struct TextItem {
+        QString text;
+        QPoint pos;
+        QColor color;
+    };
+    
     ICanvas& canvas;
     IToolFactory* currentFactory;
     ITool* activeTool;
@@ -46,4 +56,7 @@ private:
     
     // Для ShapeTool
     QPoint shapeStartPoint;
+    
+    // ← Для текста ВНУТРИ класса
+    QList<TextItem> textItems;
 };

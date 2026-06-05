@@ -583,21 +583,21 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "PainterQt::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-PainterQt-Debug-d3ce5e44b296f0854ddb.json",
+					"jsonFile" : "target-PainterQt-Debug-4a2845c2b9f44d7d3cce.json",
 					"name" : "PainterQt",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "PainterQt_autogen::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-PainterQt_autogen-Debug-4c176b8d6c98b4b110fb.json",
+					"jsonFile" : "target-PainterQt_autogen-Debug-9b4b5bd984540e5d7979.json",
 					"name" : "PainterQt_autogen",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "PainterQt_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-PainterQt_autogen_timestamp_deps-Debug-636920ccc721d9dd08b5.json",
+					"jsonFile" : "target-PainterQt_autogen_timestamp_deps-Debug-cc21dbd54ec26a9f89f5.json",
 					"name" : "PainterQt_autogen_timestamp_deps",
 					"projectIndex" : 0
 				}

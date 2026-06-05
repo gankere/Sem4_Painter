@@ -209,7 +209,9 @@ C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/PainterQt_autogen/EW
   C:/msys64/mingw64/include/pthread_signal.h \
   C:/msys64/mingw64/include/pthread_time.h \
   C:/msys64/mingw64/include/pthread_unistd.h \
+  C:/msys64/mingw64/include/qt6/QtCore/QList \
   C:/msys64/mingw64/include/qt6/QtCore/QPoint \
+  C:/msys64/mingw64/include/qt6/QtCore/QString \
   C:/msys64/mingw64/include/qt6/QtCore/q17memory.h \
   C:/msys64/mingw64/include/qt6/QtCore/q20bit.h \
   C:/msys64/mingw64/include/qt6/QtCore/q20functional.h \
