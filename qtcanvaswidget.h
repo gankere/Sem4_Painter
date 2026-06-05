@@ -16,8 +16,8 @@ public:
     
     void setActiveColor(const QColor& color);
     void setBrushSize(int size);
-    void setPixelSize(int size);        // ← ДОБАВИТЬ
-    void updateCanvasSize();            // ← ДОБАВИТЬ
+    void setPixelSize(int size);
+    void updateCanvasSize();
     void showTextDialog(const QPoint& pos);
 
 protected:

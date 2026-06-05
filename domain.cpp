@@ -3,19 +3,16 @@
 #include <algorithm>
 #include <cmath>
 
-
-// === Canvas ===
 Canvas::Canvas(int width, int height) 
     : w(width), h(height), isUndoing(false), isBatching(false) {
     if (w <= 0 || h <= 0) throw std::invalid_argument("Size must be positive");
-    data.resize(w * h, Pixel());  // ← Прозрачные пиксели
+    data.resize(w * h, Pixel());
 }
 
 void Canvas::setPixel(int x, int y, Pixel p) {
     if (x >= 0 && x < w && y >= 0 && y < h) {
         if (!isUndoing) {
-            // ← Ограничиваем историю 10000 шагов
-            if (undoHistory.size() > 10000000) {
+            if (undoHistory.size() > 10000000) { //Ограничение истории
                 std::stack<UndoStep> temp;
                 std::swap(undoHistory, temp);
             }
@@ -27,7 +24,7 @@ void Canvas::setPixel(int x, int y, Pixel p) {
 Pixel Canvas::getPixel(int x, int y) const {
     if (x >= 0 && x < w && y >= 0 && y < h)
         return data[y * w + x];
-    return Pixel();  // ← Прозрачный
+    return Pixel();
 }
 
 int Canvas::getWidth() const { return w; }
@@ -35,7 +32,7 @@ int Canvas::getHeight() const { return h; }
 
 void Canvas::startBatch() {
     isBatching = true;
-    undoHistory.push(UndoStep(-1, -1, QColor(0, 0, 0, 0), true));  // ← Прозрачный
+    undoHistory.push(UndoStep(-1, -1, QColor(0, 0, 0, 0), true));
 }
 
 void Canvas::endBatch() {
@@ -44,7 +41,8 @@ void Canvas::endBatch() {
 
 void Canvas::undo() {
     if (undoHistory.empty()) return;
-    isUndoing = true;
+    isUndoing = true; // Флаг: не пишем в историю при отмене
+
     while (!undoHistory.empty()) {
         UndoStep step = undoHistory.top();
         undoHistory.pop();
@@ -57,10 +55,8 @@ void Canvas::undo() {
 }
 
 void Canvas::clear() {
-    // ← МГНОВЕННАЯ очистка истории (swap работает за O(1))
     std::stack<UndoStep>().swap(undoHistory);
     
-    // ← Быстрая очистка данных
     std::fill(data.begin(), data.end(), Pixel());
 }
 
@@ -71,7 +67,6 @@ void BrushTool::use(ICanvas& canvas, int x, int y) {
     int radius = size / 2;
     for (int dy = -radius; dy <= radius; ++dy) {
         for (int dx = -radius; dx <= radius; ++dx) {
-            // Проверяем, находится ли точка внутри круга
             if (dx*dx + dy*dy <= radius*radius) {
                 canvas.setPixel(x + dx, y + dy, Pixel(color));
             }
@@ -154,7 +149,6 @@ void ShapeTool::drawLine(ICanvas& canvas, int x1, int y1, int x2, int y2) {
     int radius = size / 2;
 
     while (true) {
-        // Круглая кисть для линии
         for (int dy = -radius; dy <= radius; ++dy) {
             for (int dx = -radius; dx <= radius; ++dx) {
                 if (dx*dx + dy*dy <= radius*radius) {
@@ -212,19 +206,16 @@ void ShapeTool::drawEllipse(ICanvas& canvas, int x1, int y1, int x2, int y2) {
         return;
     }
 
-    // Упрощённый алгоритм эллипса
     int brushRadius = size / 2;
     
-    // Рисуем эллипс через параметризацию
-    int steps = std::max(radiusX, radiusY) * 8; // Достаточно шагов для плавности
+    int steps = std::max(radiusX, radiusY) * 8;
     if (steps < 100) steps = 100;
     
     for (int i = 0; i < steps; ++i) {
         double angle = 2.0 * 3.14159265359 * i / steps;
         int x = centerX + static_cast<int>(radiusX * std::cos(angle) + 0.5);
         int y = centerY + static_cast<int>(radiusY * std::sin(angle) + 0.5);
-        
-        // Рисуем кистью в этой точке
+
         for (int dy = -brushRadius; dy <= brushRadius; ++dy) {
             for (int dx = -brushRadius; dx <= brushRadius; ++dx) {
                 if (dx*dx + dy*dy <= brushRadius*brushRadius) {
@@ -285,13 +276,11 @@ void BucketTool::floodFill(ICanvas& canvas, int startX, int startY, const QColor
     int width = canvas.getWidth();
     int height = canvas.getHeight();
     
-    // Получаем цвет целевого пикселя
     QColor targetColor = canvas.getPixel(startX, startY).color;
     
     // Если цвета одинаковые — ничего не делаем
     if (targetColor == fillColor) return;
     
-    // Используем queue для итеративного flood fill
     std::queue<std::pair<int, int>> pixels;
     pixels.push({startX, startY});
     
@@ -299,7 +288,6 @@ void BucketTool::floodFill(ICanvas& canvas, int startX, int startY, const QColor
         auto [x, y] = pixels.front();
         pixels.pop();
         
-        // Проверяем границы
         if (x < 0 || x >= width || y < 0 || y >= height) continue;
         
         Pixel currentPixel = canvas.getPixel(x, y);
@@ -334,7 +322,6 @@ void BucketFactory::setSize(int) {}
 TextTool::TextTool(const QColor& c, int size) : color(c), fontSize(size) {}
 
 void TextTool::use(ICanvas& canvas, int x, int y) {
-    // TextTool использует drawText вместо use
     (void)canvas; (void)x; (void)y;
 }
 
@@ -344,19 +331,12 @@ void TextTool::setColor(const QColor& c) { color = c; }
 void TextTool::setSize(int s) { fontSize = s; }
 
 void TextTool::drawText(ICanvas& canvas, int x, int y, const QString& text) {
-    // Простая отрисовка текста попиксельно
-    // В реальном приложении лучше использовать QPainter
     QColor textColor = color;
     
-    // Для простоты рисуем каждый символ как набор пикселей
-    // Это базовая реализация
     int xPos = x;
     for (QChar ch : text) {
-        // Рисуем простой прямоугольник для каждого символа
-        // (в реальной версии нужно использовать шрифт)
         for (int i = 0; i < 8; ++i) {
             for (int j = 0; j < 10; ++j) {
-                // Простая заглушка — рисуем рамку символа
                 if (i == 0 || i == 7 || j == 0 || j == 9) {
                     canvas.setPixel(xPos + i, y + j, Pixel(textColor));
                 }

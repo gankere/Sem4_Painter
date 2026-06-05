@@ -7,9 +7,6 @@
 #include <QPoint>
 #include <QString>
 
-// ============================================
-// Шаг отката
-// ============================================
 struct UndoStep {
     int x, y;
     QColor previousColor;
@@ -19,9 +16,6 @@ struct UndoStep {
         : x(x_), y(y_), previousColor(prev), isBatchMarker(marker) {}
 };
 
-// ============================================
-// Пиксель
-// ============================================
 struct Pixel {
     QColor color;
     
@@ -31,9 +25,6 @@ struct Pixel {
     bool isEmpty() const { return color.alpha() == 0; }
 };
 
-// ============================================
-// Интерфейс холста
-// ============================================
 class ICanvas {
 public:
     virtual ~ICanvas() = default;
@@ -47,9 +38,6 @@ public:
     virtual void endBatch() = 0;
 };
 
-// ============================================
-// Реализация холста
-// ============================================
 class Canvas : public ICanvas {
 private:
     std::vector<Pixel> data;
@@ -71,9 +59,7 @@ public:
     void endBatch() override;
 };
 
-// ============================================
-// Инструменты
-// ============================================
+// ИНСТРУМЕНТЫ
 class ITool {
 public:
     virtual ~ITool() = default;

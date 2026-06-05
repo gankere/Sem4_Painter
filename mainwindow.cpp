@@ -15,7 +15,7 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
     
     QWidget* centralWidget = new QWidget(this);
     QHBoxLayout* mainLayout = new QHBoxLayout(centralWidget);
-    mainLayout->setContentsMargins(0, 0, 0, 0);
+    mainLayout->setContentsMargins(0, 0, 0, 0); //отступы
     mainLayout->setSpacing(0);
     
     // === ЛЕВАЯ ЧАСТЬ ===
@@ -48,9 +48,9 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
         }
         
         btn->setFixedSize(BTN_SIZE, BTN_SIZE);
-        btn->setCheckable(true);
+        btn->setCheckable(true); //состояние кнопки
         btn->setChecked(checked);
-        btn->setCursor(Qt::PointingHandCursor);
+        btn->setCursor(Qt::PointingHandCursor); //изменение курсора (кликабельный эл-т)
         btn->setStyleSheet("background-color: transparent; border: 1px solid transparent; border-radius: 4px;");
         
         toolGroup->addButton(btn, id);
@@ -58,7 +58,7 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
         return btn;
     };
 
-    // Инструменты
+    // Иконки инструментов
     createToolBtn("icons/brush.png", 0, true);
     createToolBtn("icons/eraser.png", 1);
     createToolBtn("icons/bucket.png", 2);
@@ -108,7 +108,7 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
     sep2->setStyleSheet("background-color: #ccc; margin: 0 5px;");
     toolbarLayout->addWidget(sep2);
 
-    // === РАЗМЕР КИСТИ (как RGB) ===
+    // === РАЗМЕР КИСТИ ===
     QLabel* sizeLabel = new QLabel("Размер:");
     sizeLabel->setFixedWidth(50);
     toolbarLayout->addWidget(sizeLabel);
@@ -127,10 +127,10 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
     brushSizeSpinBox->setFixedWidth(80);
     toolbarLayout->addWidget(brushSizeSpinBox);
     
-    connect(brushSizeSlider, &QSlider::valueChanged, this, &MainWindow::onBrushSizeChanged);
-    connect(brushSizeSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::onBrushSizeChanged);
+    connect(brushSizeSlider, &QSlider::valueChanged, this, &MainWindow::onBrushSizeChanged); //срабатывает, когда пользователь двигает ползунок
+    connect(brushSizeSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::onBrushSizeChanged); //срабатывает при изменении числа
 
-    // Файловые операции
+    // === ФАЙЛОВЫЕ ОПЕРАЦИИ ===
     toolbarLayout->addStretch();
     auto* saveBtn = new QPushButton("💾");
     saveBtn->setToolTip("Сохранить");
@@ -158,14 +158,14 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
     leftLayout->addWidget(topToolbar);
     
     // === КОНТЕЙНЕР ДЛЯ ХОЛСТА С СЕРЫМ ФОНОМ И СКРОЛЛЕРАМИ ===
-    QWidget* canvasContainer = new QWidget;
-    canvasContainer->setStyleSheet("background-color: #c6cfd8;");
+    QWidget* canvasContainer = new QWidget; //фон за холстом
+    canvasContainer->setStyleSheet("background-color: #c6cfd8;"); 
     QHBoxLayout* containerLayout = new QHBoxLayout(canvasContainer);
     containerLayout->setContentsMargins(0, 0, 0, 0);
     
-    QScrollArea* scrollArea = new QScrollArea;
-    scrollArea->setStyleSheet("background-color: #bbccde; border: none;");
-    scrollArea->setWidgetResizable(false);  // ← ВАЖНО: не растягивать виджет
+    QScrollArea* scrollArea = new QScrollArea; //скроллеры
+    scrollArea->setStyleSheet("background-color: #bbccde; border: none;"); 
+    scrollArea->setWidgetResizable(false);
     
     canvasWidget = new QtCanvasWidget(canvas, scrollArea);
     canvasWidget->setMinimumSize(800, 600);
@@ -229,7 +229,7 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
     connect(gSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::onRgbChanged);
     connect(bSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::onRgbChanged);
     
-    // Ползунок яркости
+    //=== ЯРКОСТЬ ===
     QHBoxLayout* valLayout = new QHBoxLayout;
     valLayout->setSpacing(5);
     
@@ -258,7 +258,7 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
     for (const QString& hex : colors) {
         auto* btn = new QPushButton;
         btn->setFixedSize(35, 35);
-        btn->setStyleSheet(QString("background-color: %1; border: 1px solid #a1b1ff; border-radius: 6px;").arg(hex));
+        btn->setStyleSheet(QString("background-color: %1; border: 1px solid #dde9fa; border-radius: 6px;").arg(hex));
         connect(btn, &QPushButton::clicked, [=]() { onColorChanged(QColor(hex)); });
         grid->addWidget(btn, idx / 4, idx % 4);
         idx++;
@@ -266,7 +266,6 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
         palLayout->addLayout(grid);
     palLayout->addStretch();
     
-    // ← РАЗМЕР ХОЛСТА
     canvasSizeLabel = new QLabel;
     canvasSizeLabel->setAlignment(Qt::AlignCenter);
     canvasSizeLabel->setStyleSheet("background-color: #dde9fa; padding: 5px; border-radius: 4px; font-weight: bold;");
@@ -280,7 +279,6 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
 }
 
 // === СЛОТЫ ===
-
 void MainWindow::onToolButtonClicked(QAbstractButton* btn) {
     int id = toolGroup->id(btn);
     onToolClicked(id);
@@ -297,18 +295,18 @@ void MainWindow::onToolClicked(int id) {
     
     IToolFactory* factory = nullptr;
     switch (id) {
-        case 0: // Кисть
+        case 0: // КИСТЬ
             factory = new BrushFactory(activeColor, brushSizeSlider->value());
             canvasWidget->setActiveColor(activeColor);
             break;
-        case 1: // Ластик
+        case 1: // ЛАСТИК
             factory = new EraserFactory(brushSizeSlider->value());
             break;
-        case 2: // ВЕДРО!
+        case 2: // ЗАЛИВКА
             factory = new BucketFactory(activeColor);
             canvasWidget->setActiveColor(activeColor);
             break;
-        case 3: // ТЕКСТ!
+        case 3: // ТЕКСТ
             factory = new TextFactory(activeColor);
             canvasWidget->setActiveColor(activeColor);
             break;
@@ -382,7 +380,7 @@ void MainWindow::updateActiveToolStyle(QAbstractButton* btn) {
 void MainWindow::onClearClicked() {
     if (QMessageBox::question(this, "Подтверждение", "Очистить холст?") == QMessageBox::Yes) {
         canvasWidget->clearCanvas();
-        updateCanvasSizeLabel();  // ← Добавь
+        updateCanvasSizeLabel();
     }
 }
 
@@ -401,7 +399,7 @@ void MainWindow::adjustBrightness(int value) {
 void QtCanvasWidget::updateCanvasSize() {
     int newWidth = canvas.getWidth() * pixelSize;
     int newHeight = canvas.getHeight() * pixelSize;
-    setFixedSize(newWidth, newHeight);  // ← Фиксированный размер виджета
+    setFixedSize(newWidth, newHeight);
     cacheDirty = true;
 }
 
@@ -442,7 +440,7 @@ void MainWindow::onSaveClicked() {
         for (int x = 0; x < canvas.getWidth(); ++x) {
             Pixel px = canvas.getPixel(x, y);
             if (px.isEmpty()) {
-                image.setPixelColor(x, y, Qt::white);  // Прозрачные = белые
+                image.setPixelColor(x, y, Qt::white);
             } else {
                 image.setPixelColor(x, y, px.color);
             }
@@ -473,7 +471,6 @@ void MainWindow::onLoadClicked() {
         return;
     }
     
-    // ← Сначала очищаем canvas
     canvas.clear();
     
     // Загружаем пиксели
@@ -487,7 +484,7 @@ void MainWindow::onLoadClicked() {
         }
     }
     
-    // ← Обновляем отображение (НЕ clearCanvas!)
+    // Обновляем отображение
     canvasWidget->updateCanvasSize();
     canvasWidget->update();
     

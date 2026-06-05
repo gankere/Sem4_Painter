@@ -33,7 +33,8 @@ QtCanvasWidget::~QtCanvasWidget() {
     delete currentFactory;
 }
 
-void QtCanvasWidget::updateFactory(IToolFactory* factory) {
+//Смена инструмента
+void QtCanvasWidget::updateFactory(IToolFactory* factory) { 
     delete activeTool;
     delete currentFactory;
     currentFactory = factory;
