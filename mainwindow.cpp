@@ -379,20 +379,6 @@ void MainWindow::updateActiveToolStyle(QAbstractButton* btn) {
     }
 }
 
-void MainWindow::onSaveClicked() {
-    QString path = QFileDialog::getSaveFileName(this, "Сохранить изображение", "", "PNG (*.png);;JPG (*.jpg);;BMP (*.bmp)");
-    if (!path.isEmpty()) {
-        QMessageBox::information(this, "Инфо", "Функция сохранения будет реализована далее.");
-    }
-}
-
-void MainWindow::onLoadClicked() {
-    QString path = QFileDialog::getOpenFileName(this, "Загрузить изображение", "", "Images (*.png *.jpg *.bmp)");
-    if (!path.isEmpty()) {
-        QMessageBox::information(this, "Инфо", "Функция загрузки будет реализована далее.");
-    }
-}
-
 void MainWindow::onClearClicked() {
     if (QMessageBox::question(this, "Подтверждение", "Очистить холст?") == QMessageBox::Yes) {
         canvasWidget->clearCanvas();
@@ -423,4 +409,87 @@ void MainWindow::updateCanvasSizeLabel() {
     int width = canvas.getWidth();
     int height = canvas.getHeight();
     canvasSizeLabel->setText(QString("%1 x %2 px").arg(width).arg(height));
+}
+
+void MainWindow::onSaveClicked() {
+    QString path = QFileDialog::getSaveFileName(
+        this, 
+        "Сохранить изображение", 
+        "", 
+        "PNG (*.png);;JPG (*.jpg *.jpeg);;BMP (*.bmp)"
+    );
+    
+    if (path.isEmpty()) return;
+    
+    // Определяем формат по расширению
+    QString format;
+    if (path.endsWith(".png", Qt::CaseInsensitive)) {
+        format = "PNG";
+    } else if (path.endsWith(".jpg", Qt::CaseInsensitive) || path.endsWith(".jpeg", Qt::CaseInsensitive)) {
+        format = "JPG";
+    } else if (path.endsWith(".bmp", Qt::CaseInsensitive)) {
+        format = "BMP";
+    } else {
+        // По умолчанию PNG
+        path += ".png";
+        format = "PNG";
+    }
+    
+    // Создаём изображение из canvas
+    QImage image(canvas.getWidth(), canvas.getHeight(), QImage::Format_RGB32);
+    
+    for (int y = 0; y < canvas.getHeight(); ++y) {
+        for (int x = 0; x < canvas.getWidth(); ++x) {
+            Pixel px = canvas.getPixel(x, y);
+            if (px.isEmpty()) {
+                image.setPixelColor(x, y, Qt::white);  // Прозрачные = белые
+            } else {
+                image.setPixelColor(x, y, px.color);
+            }
+        }
+    }
+    
+    // Сохраняем
+    if (image.save(path, format.toUtf8().constData())) {
+        QMessageBox::information(this, "Успех", "Изображение сохранено!");
+    } else {
+        QMessageBox::critical(this, "Ошибка", "Не удалось сохранить изображение!");
+    }
+}
+
+void MainWindow::onLoadClicked() {
+    QString path = QFileDialog::getOpenFileName(
+        this, 
+        "Загрузить изображение", 
+        "", 
+        "Images (*.png *.jpg *.jpeg *.bmp)"
+    );
+    
+    if (path.isEmpty()) return;
+    
+    QImage image;
+    if (!image.load(path)) {
+        QMessageBox::critical(this, "Ошибка", "Не удалось загрузить изображение!");
+        return;
+    }
+    
+    // ← Сначала очищаем canvas
+    canvas.clear();
+    
+    // Загружаем пиксели
+    int width = std::min(image.width(), canvas.getWidth());
+    int height = std::min(image.height(), canvas.getHeight());
+    
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            QColor color = image.pixelColor(x, y);
+            canvas.setPixel(x, y, Pixel(color));
+        }
+    }
+    
+    // ← Обновляем отображение (НЕ clearCanvas!)
+    canvasWidget->updateCanvasSize();
+    canvasWidget->update();
+    
+    QMessageBox::information(this, "Успех", "Изображение загружено!");
 }
