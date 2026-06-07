@@ -62,6 +62,11 @@ public:
     void endBatch() override;
     
     void loadFromImage(const QImage& image, int x, int y, int width, int height) override;
+
+    // Методы для оптимизации заливки:
+    Pixel* getData() { return data.data(); }
+    bool getIsUndoing() const { return isUndoing; }
+    void setIsUndoing(bool val) { isUndoing = val; }
 };
 
 // ИНСТРУМЕНТЫ
@@ -181,7 +186,7 @@ public:
 
 class BucketTool : public ITool {
 private:
-    QColor color;
+    QRgb color;
     
 public:
     BucketTool(const QColor& c = Qt::black);
@@ -191,7 +196,7 @@ public:
     void setSize(int s) override;
     
 private:
-    void floodFill(ICanvas& canvas, int startX, int startY, const QColor& fillColor);
+    void floodFill(Canvas& canvas, int startX, int startY, QRgb fillColor);
 };
 
 class BucketFactory : public IToolFactory {

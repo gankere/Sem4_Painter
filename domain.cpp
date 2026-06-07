@@ -13,7 +13,7 @@ Canvas::Canvas(int width, int height)
 void Canvas::setPixel(int x, int y, Pixel p) {
     if (x >= 0 && x < w && y >= 0 && y < h) {
         if (!isUndoing) {
-            if (undoHistory.size() > 10000000) { //Ограничение истории
+            if (undoHistory.size() > 100000) { //Ограничение истории
                 std::stack<UndoStep> temp;
                 std::swap(undoHistory, temp);
             }
@@ -343,49 +343,77 @@ void ShapeFactory::setColor(const QColor& c) { color = c; }
 void ShapeFactory::setSize(int s) { size = s; }
 
 // === BucketTool ===
-BucketTool::BucketTool(const QColor& c) : color(c) {}
+BucketTool::BucketTool(const QColor& c) : color(c.rgba()) {}
 
 void BucketTool::use(ICanvas& canvas, int x, int y) {
-    floodFill(canvas, x, y, color);
+    Canvas* realCanvas = dynamic_cast<Canvas*>(&canvas);
+    if (realCanvas) {
+        floodFill(*realCanvas, x, y, color);
+    }
 }
-
 std::string BucketTool::getToolName() const { return "Bucket"; }
 
-void BucketTool::setColor(const QColor& c) { color = c; }
-void BucketTool::setSize(int) {}  // Ведро не использует размер
+void BucketTool::setColor(const QColor& c) { color = c.rgba(); }
+void BucketTool::setSize(int) {}
 
-void BucketTool::floodFill(ICanvas& canvas, int startX, int startY, const QColor& fillColor) {
+void BucketTool::floodFill(Canvas& canvas, int startX, int startY, QRgb fillColor) {
     int width = canvas.getWidth();
     int height = canvas.getHeight();
+
+    if (startX < 0 || startX >= width || startY < 0 || startY >= height) return;
     
-    QRgb targetColor = canvas.getPixel(startX, startY).color;
+    // Прямой доступ к данным холста
+    Pixel* data = canvas.getData();
+    int targetColor = data[startY * width + startX].color;
+    if (targetColor == fillColor) return;
+
+    bool wasUndoing = canvas.getIsUndoing();
+    canvas.setIsUndoing(true);
     
-    // Если цвета одинаковые — ничего не делаем
-    if (targetColor == fillColor.rgba()) return;
+    std::vector<std::pair<int, int>> stack;
+    stack.reserve(width * height / 10);
+    stack.push_back({startX, startY});
     
-    std::queue<std::pair<int, int>> pixels;
-    pixels.push({startX, startY});
-    
-    while (!pixels.empty()) {
-        auto [x, y] = pixels.front();
-        pixels.pop();
+    while (!stack.empty()) {
+        auto [x, y] = stack.back();
+        stack.pop_back();
         
-        if (x < 0 || x >= width || y < 0 || y >= height) continue;
         
-        Pixel currentPixel = canvas.getPixel(x, y);
+        int x1 = x; // Находим начало строки слева
+        while (x1 > 0 && data[y * width + (x1 - 1)].color == targetColor) {
+            x1--;
+        }
+              
+        int x2 = x;// Находим конец строки справа
+        while (x2 < width - 1 && data[y * width + (x2 + 1)].color == targetColor) {
+            x2++;
+        }       
         
-        // Если цвет не совпадает с целевым — пропускаем
-        if (currentPixel.color != targetColor) continue;  // Уже QRgb, работает
+        Pixel* row = data + y * width + x1;// Заливаем всю строку
+        for (int i = 0; i <= x2 - x1; ++i) {
+            row[i].color = fillColor;
+        }
+               
+        if (y > 0) {// Проверяем строку выше
+            Pixel* aboveRow = data + (y - 1) * width;
+            for (int i = x1; i <= x2; ++i) {
+                if (aboveRow[i].color == targetColor) {
+                    stack.push_back({i, y - 1});
+                }
+            }
+        }
         
-        // Закрашиваем пиксель
-        canvas.setPixel(x, y, Pixel(fillColor.rgba()));
-        
-        // Добавляем соседей
-        pixels.push({x + 1, y});
-        pixels.push({x - 1, y});
-        pixels.push({x, y + 1});
-        pixels.push({x, y - 1});
+        if (y < height - 1) {// Проверяем строку ниже
+            Pixel* belowRow = data + (y + 1) * width;
+            for (int i = x1; i <= x2; ++i) {
+                if (belowRow[i].color == targetColor) {
+                    stack.push_back({i, y + 1});
+                }
+            }
+        }
     }
+    
+    canvas.setIsUndoing(wasUndoing);
 }
 
 // === BucketFactory ===

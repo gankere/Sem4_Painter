@@ -553,6 +553,7 @@ void MainWindow::onNewCanvasClicked() {
     canvas = new Canvas(width, height);
     
     canvasWidget->setCanvas(*canvas); //обновление виджета
+    scrollArea->show();
     
     updateCanvasSizeLabel();
 }
