@@ -291,7 +291,19 @@ MainWindow::MainWindow(QWidget* parent)
     
     setCentralWidget(centralWidget);
     resize(1100, 750);
+
+    // Глобальный шорткат Ctrl+Z
+    undoShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Z), this);
+    undoShortcut->setContext(Qt::ApplicationShortcut);
+    connect(undoShortcut, &QShortcut::activated, this, [this]() {
+        if (canvas) {
+            canvas->undo();
+            canvasWidget->setCacheDirty();  // <-- ДОБАВИТЬ!
+            canvasWidget->update();
+        }
+    });
 }
+
 
 // === СЛОТЫ ===
 void MainWindow::onToolButtonClicked(QAbstractButton* btn) {
@@ -557,3 +569,4 @@ void MainWindow::onNewCanvasClicked() {
     
     updateCanvasSizeLabel();
 }
+

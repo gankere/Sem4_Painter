@@ -9,16 +9,16 @@ CanvasDialog::CanvasDialog(QWidget* parent) : QDialog(parent) {
     auto* widthLayout = new QHBoxLayout();
     widthLayout->addWidget(new QLabel("Ширина:"));
     widthSpinBox = new QSpinBox();
-    widthSpinBox->setRange(10, 5000);
-    widthSpinBox->setValue(100);
+    widthSpinBox->setRange(10, 2000);
+    widthSpinBox->setValue(500);
     widthLayout->addWidget(widthSpinBox);
     mainLayout->addLayout(widthLayout);
 
     auto* heightLayout = new QHBoxLayout();
     heightLayout->addWidget(new QLabel("Высота:"));
     heightSpinBox = new QSpinBox();
-    heightSpinBox->setRange(10, 5000);
-    heightSpinBox->setValue(100);
+    heightSpinBox->setRange(10, 2000);
+    heightSpinBox->setValue(500);
     heightLayout->addWidget(heightSpinBox);
     mainLayout->addLayout(heightLayout);
 

@@ -23,6 +23,9 @@ public:
     void showTextDialog(const QPoint& pos);
     void setCanvas(ICanvas& newCanvas);
 
+    void setCacheDirty() { cacheDirty = true; }
+    void setCacheDirty(bool val) { cacheDirty = val; }
+
 protected:
     void paintEvent(QPaintEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
@@ -63,6 +66,8 @@ private:
     // Для preview
     QPixmap previewCache;
     bool hasPreview;
+    QImage previewImage; 
+    
     void drawPreview(const QPoint& startCanvas, const QPoint& currentCanvas);
     void clearPreview();
     

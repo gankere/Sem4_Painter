@@ -774,6 +774,7 @@ C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/mainwindow.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/QColor
  mdp:C:/msys64/mingw64/include/qt6/QtGui/QImage
  mdp:C:/msys64/mingw64/include/qt6/QtGui/QPixmap
+ mdp:C:/msys64/mingw64/include/qt6/QtGui/QShortcut
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qaction.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qbitmap.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qbrush.h
@@ -795,6 +796,7 @@ C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/mainwindow.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qregion.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qrgb.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qrgba64.h
+ mdp:C:/msys64/mingw64/include/qt6/QtGui/qshortcut.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qtextdocument.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qtgui-config.h
  mdp:C:/msys64/mingw64/include/qt6/QtGui/qtguiexports.h

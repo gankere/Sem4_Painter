@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QButtonGroup>
 #include <QScrollArea>
+#include <QShortcut>
 #include "qtcanvaswidget.h"
 #include "domain.h"
 
@@ -48,6 +49,8 @@ private:
     QSpinBox* brushSizeSpinBox;
 
     QLabel* canvasSizeLabel;
+
+    QShortcut* undoShortcut;
     
     void updateActiveToolStyle(QAbstractButton* btn);
     void updateCanvasSizeLabel();

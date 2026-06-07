@@ -309,44 +309,138 @@ void QtCanvasWidget::showTextDialog(const QPoint& pos) {
 }
 
 void QtCanvasWidget::drawPreview(const QPoint& startCanvas, const QPoint& currentCanvas) {
-    if (previewCache.isNull() || previewCache.size() != canvasCache.size()) {
-        previewCache = QPixmap(canvasCache.size());
+    
+    int canvasW = canvas->getWidth();
+    int canvasH = canvas->getHeight();
+    int cacheW = canvasW * pixelSize;
+    int cacheH = canvasH * pixelSize;
+    
+    // Создаём QImage для preview
+    if (previewImage.isNull() || previewImage.size() != QSize(cacheW, cacheH)) {
+        previewImage = QImage(cacheW, cacheH, QImage::Format_ARGB32);
     }
-    previewCache.fill(Qt::transparent);
+    previewImage.fill(qRgba(0, 0, 0, 0));  // Прозрачный фон
     
-    QPainter p(&previewCache);
-    p.setRenderHint(QPainter::Antialiasing, false);
-    
-    int penWidth = brushSize * pixelSize;
-    
-    QPen pen(activeToolColor, penWidth);
-    pen.setJoinStyle(Qt::MiterJoin);
-    pen.setCapStyle(Qt::RoundCap);
-
-    p.setPen(pen);
-    p.setBrush(Qt::NoBrush);
-    
+    // Получаем доступ к памяти
     ShapeTool* shapeTool = dynamic_cast<ShapeTool*>(activeTool);
-    if (!shapeTool) {
-        p.end();
-        return;
-    }
+    if (!shapeTool) return;
     
-    QPoint startScreen = QPoint(startCanvas.x() * pixelSize, startCanvas.y() * pixelSize);
-    QPoint currentScreen = QPoint(currentCanvas.x() * pixelSize, currentCanvas.y() * pixelSize);
+    QRgb color = activeToolColor.rgba();
+    int brushRadius = brushSize / 2;
     
+    // Рисуем фигуру пикселями (так же, как в ShapeTool)
     switch (shapeTool->getShapeType()) {
-        case ShapeTool::Line:
-            p.drawLine(startScreen, currentScreen);
+        case ShapeTool::Line: {
+            int x1 = startCanvas.x(), y1 = startCanvas.y();
+            int x2 = currentCanvas.x(), y2 = currentCanvas.y();
+            
+            int dx = std::abs(x2 - x1), dy = std::abs(y2 - y1);
+            int sx = (x1 < x2) ? 1 : -1, sy = (y1 < y2) ? 1 : -1;
+            int err = dx - dy;
+            
+            while (true) {
+                // Рисуем кисть в точке (x1, y1)
+                for (int bdy = -brushRadius; bdy <= brushRadius; ++bdy) {
+                    for (int bdx = -brushRadius; bdx <= brushRadius; ++bdx) {
+                        if (bdx*bdx + bdy*bdy <= brushRadius*brushRadius) {
+                            int px = x1 + bdx;
+                            int py = y1 + bdy;
+                            if (px >= 0 && px < canvasW && py >= 0 && py < canvasH) {
+                                // Заполняем блок pixelSize × pixelSize
+                                int screenX = px * pixelSize;
+                                int screenY = py * pixelSize;
+                                for (int py2 = 0; py2 < pixelSize; ++py2) {
+                                    QRgb* destLine = reinterpret_cast<QRgb*>(previewImage.scanLine(screenY + py2));
+                                    for (int px2 = 0; px2 < pixelSize; ++px2) {
+                                        destLine[screenX + px2] = color;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                if (x1 == x2 && y1 == y2) break;
+                int e2 = 2 * err;
+                if (e2 > -dy) { err -= dy; x1 += sx; }
+                if (e2 < dx) { err += dx; y1 += sy; }
+            }
             break;
-        case ShapeTool::Rect:
-            p.drawRect(QRect(startScreen, currentScreen).normalized());
+        }
+        
+        case ShapeTool::Rect: {
+            int minX = std::min(startCanvas.x(), currentCanvas.x());
+            int maxX = std::max(startCanvas.x(), currentCanvas.x());
+            int minY = std::min(startCanvas.y(), currentCanvas.y());
+            int maxY = std::max(startCanvas.y(), currentCanvas.y());
+            
+            int halfSize = brushRadius;  // Толщина рамки
+            
+            // Рисуем РАМКУ (не заполненный!)
+            for (int y = minY - halfSize; y <= maxY + halfSize; ++y) {
+                for (int x = minX - halfSize; x <= maxX + halfSize; ++x) {
+                    if (x >= 0 && x < canvasW && y >= 0 && y < canvasH) {
+                        // Проверяем, находится ли пиксель в рамке
+                        bool nearTop = (y >= minY - halfSize && y <= minY + halfSize);
+                        bool nearBottom = (y >= maxY - halfSize && y <= maxY + halfSize);
+                        bool nearLeft = (x >= minX - halfSize && x <= minX + halfSize);
+                        bool nearRight = (x >= maxX - halfSize && x <= maxX + halfSize);
+                        
+                        // Рисуем только если в рамке
+                        if (nearTop || nearBottom || nearLeft || nearRight) {
+                            int screenX = x * pixelSize;
+                            int screenY = y * pixelSize;
+                            for (int py = 0; py < pixelSize; ++py) {
+                                QRgb* destLine = reinterpret_cast<QRgb*>(previewImage.scanLine(screenY + py));
+                                for (int px = 0; px < pixelSize; ++px) {
+                                    destLine[screenX + px] = color;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        break;
+}
+        
+        case ShapeTool::Ellipse: {
+            int centerX = (startCanvas.x() + currentCanvas.x()) / 2;
+            int centerY = (startCanvas.y() + currentCanvas.y()) / 2;
+            int radiusX = std::abs(currentCanvas.x() - startCanvas.x()) / 2;
+            int radiusY = std::abs(currentCanvas.y() - startCanvas.y()) / 2;
+            
+            int steps = std::max(radiusX, radiusY) * 8;
+            if (steps < 100) steps = 100;
+            
+            for (int i = 0; i < steps; ++i) {
+                double angle = 2.0 * 3.14159265359 * i / steps;
+                int x = centerX + static_cast<int>(radiusX * std::cos(angle) + 0.5);
+                int y = centerY + static_cast<int>(radiusY * std::sin(angle) + 0.5);
+                
+                for (int bdy = -brushRadius; bdy <= brushRadius; ++bdy) {
+                    for (int bdx = -brushRadius; bdx <= brushRadius; ++bdx) {
+                        if (bdx*bdx + bdy*bdy <= brushRadius*brushRadius) {
+                            int px = x + bdx, py = y + bdy;
+                            if (px >= 0 && px < canvasW && py >= 0 && py < canvasH) {
+                                int screenX = px * pixelSize;
+                                int screenY = py * pixelSize;
+                                for (int py2 = 0; py2 < pixelSize; ++py2) {
+                                    QRgb* destLine = reinterpret_cast<QRgb*>(previewImage.scanLine(screenY + py2));
+                                    for (int px2 = 0; px2 < pixelSize; ++px2) {
+                                        destLine[screenX + px2] = color;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             break;
-        case ShapeTool::Ellipse:
-            p.drawEllipse(QRect(startScreen, currentScreen).normalized());
-            break;
+        }
     }
-    p.end();
+    
+    // Конвертируем в QPixmap для отображения
+    previewCache = QPixmap::fromImage(previewImage);
 }
 
 void QtCanvasWidget::clearPreview() {

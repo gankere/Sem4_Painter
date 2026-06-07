@@ -10,10 +10,10 @@
 
 struct UndoStep {
     int x, y;
-    QColor previousColor;
+    QRgb previousColor;
     bool isBatchMarker;
     
-    UndoStep(int x_ = 0, int y_ = 0, const QColor& prev = QColor(0, 0, 0, 0), bool marker = false)
+    UndoStep(int x_ = 0, int y_ = 0, QRgb prev = 0, bool marker = false)
         : x(x_), y(y_), previousColor(prev), isBatchMarker(marker) {}
 };
 
@@ -39,6 +39,7 @@ public:
     virtual void startBatch() = 0;
     virtual void endBatch() = 0;
     virtual void loadFromImage(const QImage& image, int x, int y, int width, int height) = 0;
+    virtual int getUndoHistorySize() const = 0;
 };
 
 class Canvas : public ICanvas {
@@ -62,6 +63,7 @@ public:
     void endBatch() override;
     
     void loadFromImage(const QImage& image, int x, int y, int width, int height) override;
+    int getUndoHistorySize() const override { return undoHistory.size(); }
 
     // Методы для оптимизации заливки:
     Pixel* getData() { return data.data(); }
