@@ -346,6 +346,7 @@ C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/PainterQt_autogen/EW
   C:/msys64/mingw64/include/qt6/QtCore/qxptype_traits.h \
   C:/msys64/mingw64/include/qt6/QtCore/qyieldcpu.h \
   C:/msys64/mingw64/include/qt6/QtGui/QColor \
+  C:/msys64/mingw64/include/qt6/QtGui/QImage \
   C:/msys64/mingw64/include/qt6/QtGui/QPixmap \
   C:/msys64/mingw64/include/qt6/QtGui/qaction.h \
   C:/msys64/mingw64/include/qt6/QtGui/qbitmap.h \

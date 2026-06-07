@@ -55,7 +55,7 @@ private:
 
     void drawAtPosition(const QPoint& pos);
     void drawLine(const QPoint& from, const QPoint& to);
-    void drawDirectlyOnCache(int canvasX, int canvasY, const QColor& color, int brushSize);
+    void drawDirectlyOnCache(int canvasX, int canvasY, QRgb color, int brushSize);
     
     // Для фигур
     QPoint shapeStartCanvas;

@@ -51,4 +51,7 @@ private:
     
     void updateActiveToolStyle(QAbstractButton* btn);
     void updateCanvasSizeLabel();
+
+    void loadImageAsync(const QString& path);
+    void onImageLoaded(QImage image, const QString& path);
 };

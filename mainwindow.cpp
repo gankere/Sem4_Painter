@@ -10,6 +10,10 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QScrollArea>
+#include <QtConcurrent>
+#include <QThreadPool>
+#include <QRunnable>
+
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), canvas(nullptr), activeColor(Qt::black) {
@@ -301,6 +305,7 @@ void MainWindow::onShapeButtonClicked(QAbstractButton* btn) {
 }
 
 void MainWindow::onToolClicked(int id) {
+    if (!canvas) return;
     QAbstractButton* activeBtn = toolGroup->button(id);
     updateActiveToolStyle(activeBtn);
     
@@ -389,6 +394,11 @@ void MainWindow::updateActiveToolStyle(QAbstractButton* btn) {
 }
 
 void MainWindow::onClearClicked() {
+    if (!canvas) {
+        QMessageBox::warning(this, "Внимание", "Сначала создайте холст!");
+        return;
+    }
+    
     if (QMessageBox::question(this, "Подтверждение", "Очистить холст?") == QMessageBox::Yes) {
         canvasWidget->clearCanvas();
         updateCanvasSizeLabel();
@@ -418,6 +428,11 @@ void MainWindow::updateCanvasSizeLabel() {
 }
 
 void MainWindow::onSaveClicked() {
+    if (!canvas) {
+        QMessageBox::warning(this, "Внимание", "Сначала создайте холст!");
+        return;
+    }
+    
     QString path = QFileDialog::getSaveFileName(
         this, 
         "Сохранить изображение", 
@@ -447,9 +462,9 @@ void MainWindow::onSaveClicked() {
         for (int x = 0; x < canvas->getWidth(); ++x) {
             Pixel px = canvas->getPixel(x, y);
             if (px.isEmpty()) {
-                image.setPixelColor(x, y, Qt::white);
+                image.setPixel(x, y, qRgb(255, 255, 255));
             } else {
-                image.setPixelColor(x, y, px.color);
+                image.setPixel(x, y, px.color);
             }
         }
     }
@@ -464,9 +479,7 @@ void MainWindow::onSaveClicked() {
 
 void MainWindow::onLoadClicked() {
     QString path = QFileDialog::getOpenFileName(
-        this, 
-        "Загрузить изображение", 
-        "", 
+        this, "Загрузить изображение", "", 
         "Images (*.png *.jpg *.jpeg *.bmp)"
     );
     
@@ -478,22 +491,44 @@ void MainWindow::onLoadClicked() {
         return;
     }
     
-    canvas->clear();
+    int imgWidth = image.width();
+    int imgHeight = image.height();
     
-    int width = std::min(image.width(), canvas->getWidth());
-    int height = std::min(image.height(), canvas->getHeight());
-    
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            QColor color = image.pixelColor(x, y);
-            canvas->setPixel(x, y, Pixel(color));
+    if (!canvas || canvas->getWidth() < imgWidth || canvas->getHeight() < imgHeight) {
+        QMessageBox::StandardButton reply;
+        if (canvas) {
+            reply = QMessageBox::question(
+                this, "Создать новый холст?", 
+                QString("Размер изображения (%1x%2) больше текущего холста.\nСоздать новый холст?")
+                    .arg(imgWidth).arg(imgHeight),
+                QMessageBox::Yes | QMessageBox::No
+            );
+        } else {
+            reply = QMessageBox::Yes;
+        }
+        
+        if (reply == QMessageBox::Yes) {
+            delete canvas;
+            canvas = new Canvas(imgWidth, imgHeight);
+            canvasWidget->setCanvas(*canvas);
+            scrollArea->show();
+            updateCanvasSizeLabel();
+        } else {
+            return;
         }
     }
     
-    canvasWidget->updateCanvasSize(); //обновление отображения
-    canvasWidget->update();
+    setCursor(Qt::WaitCursor);
     
-    QMessageBox::information(this, "Успех", "Изображение загружено!");
+    int width = std::min(imgWidth, canvas->getWidth());
+    int height = std::min(imgHeight, canvas->getHeight());
+    
+    canvas->loadFromImage(image, 0, 0, width, height);
+    
+    setCursor(Qt::ArrowCursor);
+    
+    canvasWidget->updateCanvasSize();
+    canvasWidget->update();
 }
 
 void MainWindow::createCanvas(int width, int height) {

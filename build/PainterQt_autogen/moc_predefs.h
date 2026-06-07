@@ -1,5 +1,6 @@
 #define ARCHITECTURE_ID "x86_64"
 #define MINGW_HAS_SECURE_API 1
+#define QT_CONCURRENT_LIB 1
 #define QT_CORE_LIB 1
 #define QT_GUI_LIB 1
 #define QT_WIDGETS_LIB 1

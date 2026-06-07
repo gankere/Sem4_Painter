@@ -6,6 +6,7 @@
 #include <QColor>
 #include <QPoint>
 #include <QString>
+#include <QImage>
 
 struct UndoStep {
     int x, y;
@@ -17,12 +18,13 @@ struct UndoStep {
 };
 
 struct Pixel {
-    QColor color;
+    QRgb color;
     
-    Pixel() : color(0, 0, 0, 0) {}  // Прозрачный = пустой
-    Pixel(const QColor& c) : color(c) {}
+    Pixel() : color(qRgba(0, 0, 0, 0)) {}
+    Pixel(QRgb c) : color(c) {}
+    Pixel(QColor c) : color(c.rgba()) {}
     
-    bool isEmpty() const { return color.alpha() == 0; }
+    bool isEmpty() const { return qAlpha(color) == 0; }
 };
 
 class ICanvas {
@@ -36,6 +38,7 @@ public:
     virtual void undo() = 0;
     virtual void startBatch() = 0;
     virtual void endBatch() = 0;
+    virtual void loadFromImage(const QImage& image, int x, int y, int width, int height) = 0;
 };
 
 class Canvas : public ICanvas {
@@ -57,6 +60,8 @@ public:
     void undo() override;
     void startBatch() override;
     void endBatch() override;
+    
+    void loadFromImage(const QImage& image, int x, int y, int width, int height) override;
 };
 
 // ИНСТРУМЕНТЫ

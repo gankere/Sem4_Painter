@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <cmath>
+#include <QImage>
 
 Canvas::Canvas(int width, int height) 
     : w(width), h(height), isUndoing(false), isBatching(false) {
@@ -68,7 +69,7 @@ void BrushTool::use(ICanvas& canvas, int x, int y) {
     for (int dy = -radius; dy <= radius; ++dy) {
         for (int dx = -radius; dx <= radius; ++dx) {
             if (dx*dx + dy*dy <= radius*radius) {
-                canvas.setPixel(x + dx, y + dy, Pixel(color));
+                canvas.setPixel(x + dx, y + dy, Pixel(color.rgba()));
             }
         }
     }
@@ -152,7 +153,7 @@ void ShapeTool::drawLine(ICanvas& canvas, int x1, int y1, int x2, int y2) {
         for (int dy = -radius; dy <= radius; ++dy) {
             for (int dx = -radius; dx <= radius; ++dx) {
                 if (dx*dx + dy*dy <= radius*radius) {
-                    canvas.setPixel(x1 + dx, y1 + dy, Pixel(color));
+                    canvas.setPixel(x1 + dx, y1 + dy, Pixel(color.rgba()));
                 }
             }
         }
@@ -178,7 +179,7 @@ void ShapeTool::drawRect(ICanvas& canvas, int x1, int y1, int x2, int y2) {
         int half = size / 2;
         for (int dy = -half; dy < size - half; ++dy) {
             for (int dx = -half; dx < size - half; ++dx) {
-                canvas.setPixel(minX + dx, minY + dy, Pixel(color));
+                canvas.setPixel(minX + dx, minY + dy, Pixel(color.rgba()));
             }
         }
         return;
@@ -188,7 +189,7 @@ void ShapeTool::drawRect(ICanvas& canvas, int x1, int y1, int x2, int y2) {
     if (height == 1) {
         for (int x = minX; x <= maxX; ++x) {
             for (int dy = -size/2; dy < size - size/2; ++dy) {
-                canvas.setPixel(x, minY + dy, Pixel(color));
+                canvas.setPixel(x, minY + dy, Pixel(color.rgba()));
             }
         }
         return;
@@ -198,7 +199,7 @@ void ShapeTool::drawRect(ICanvas& canvas, int x1, int y1, int x2, int y2) {
     if (width == 1) {
         for (int y = minY; y <= maxY; ++y) {
             for (int dx = -size/2; dx < size - size/2; ++dx) {
-                canvas.setPixel(minX + dx, y, Pixel(color));
+                canvas.setPixel(minX + dx, y, Pixel(color.rgba()));
             }
         }
         return;
@@ -208,7 +209,7 @@ void ShapeTool::drawRect(ICanvas& canvas, int x1, int y1, int x2, int y2) {
     if (width <= size || height <= size) {
         for (int y = minY - size/2; y <= maxY + size - size/2; ++y) {
             for (int x = minX - size/2; x <= maxX + size - size/2; ++x) {
-                canvas.setPixel(x, y, Pixel(color));
+                canvas.setPixel(x, y, Pixel(color.rgba()));
             }
         }
         return;
@@ -217,25 +218,25 @@ void ShapeTool::drawRect(ICanvas& canvas, int x1, int y1, int x2, int y2) {
     // Обычный случай: большой прямоугольник
     for (int x = minX; x <= maxX; ++x) {
         for (int i = 0; i < size; ++i) {
-            canvas.setPixel(x, minY + i, Pixel(color));
+            canvas.setPixel(x, minY + i, Pixel(color.rgba()));
         }
     }
 
     for (int x = minX; x <= maxX; ++x) {
         for (int i = 0; i < size; ++i) {
-            canvas.setPixel(x, maxY - i, Pixel(color));
+            canvas.setPixel(x, maxY - i, Pixel(color.rgba()));
         }
     }
     
     for (int y = minY; y <= maxY; ++y) {
         for (int i = 0; i < size; ++i) {
-            canvas.setPixel(minX + i, y, Pixel(color));
+            canvas.setPixel(minX + i, y, Pixel(color.rgba()));
         }
     }
 
     for (int y = minY; y <= maxY; ++y) {
         for (int i = 0; i < size; ++i) {
-            canvas.setPixel(maxX - i, y, Pixel(color));
+            canvas.setPixel(maxX - i, y, Pixel(color.rgba()));
         }
     }
 }
@@ -252,7 +253,7 @@ void ShapeTool::drawEllipse(ICanvas& canvas, int x1, int y1, int x2, int y2) {
         for (int dy = -brushRadius; dy <= brushRadius; ++dy) {
             for (int dx = -brushRadius; dx <= brushRadius; ++dx) {
                 if (dx*dx + dy*dy <= brushRadius*brushRadius) {
-                    canvas.setPixel(centerX + dx, centerY + dy, Pixel(color));
+                    canvas.setPixel(centerX + dx, centerY + dy, Pixel(color.rgba()));
                 }
             }
         }
@@ -265,7 +266,7 @@ void ShapeTool::drawEllipse(ICanvas& canvas, int x1, int y1, int x2, int y2) {
             for (int dy = -brushRadius; dy <= brushRadius; ++dy) {
                 for (int dx = -brushRadius; dx <= brushRadius; ++dx) {
                     if (dx*dx + dy*dy <= brushRadius*brushRadius) {
-                        canvas.setPixel(centerX + dx, y + dy, Pixel(color));
+                        canvas.setPixel(centerX + dx, y + dy, Pixel(color.rgba()));
                     }
                 }
             }
@@ -279,7 +280,7 @@ void ShapeTool::drawEllipse(ICanvas& canvas, int x1, int y1, int x2, int y2) {
             for (int dy = -brushRadius; dy <= brushRadius; ++dy) {
                 for (int dx = -brushRadius; dx <= brushRadius; ++dx) {
                     if (dx*dx + dy*dy <= brushRadius*brushRadius) {
-                        canvas.setPixel(x + dx, centerY + dy, Pixel(color));
+                        canvas.setPixel(x + dx, centerY + dy, Pixel(color.rgba()));
                     }
                 }
             }
@@ -300,7 +301,7 @@ void ShapeTool::drawEllipse(ICanvas& canvas, int x1, int y1, int x2, int y2) {
         for (int dy = -brushRadius; dy <= brushRadius; ++dy) {
             for (int dx = -brushRadius; dx <= brushRadius; ++dx) {
                 if (dx*dx + dy*dy <= brushRadius*brushRadius) {
-                    canvas.setPixel(x + dx, y + dy, Pixel(color));
+                    canvas.setPixel(x + dx, y + dy, Pixel(color.rgba()));
                 }
             }
         }
@@ -357,10 +358,10 @@ void BucketTool::floodFill(ICanvas& canvas, int startX, int startY, const QColor
     int width = canvas.getWidth();
     int height = canvas.getHeight();
     
-    QColor targetColor = canvas.getPixel(startX, startY).color;
+    QRgb targetColor = canvas.getPixel(startX, startY).color;
     
     // Если цвета одинаковые — ничего не делаем
-    if (targetColor == fillColor) return;
+    if (targetColor == fillColor.rgba()) return;
     
     std::queue<std::pair<int, int>> pixels;
     pixels.push({startX, startY});
@@ -374,10 +375,10 @@ void BucketTool::floodFill(ICanvas& canvas, int startX, int startY, const QColor
         Pixel currentPixel = canvas.getPixel(x, y);
         
         // Если цвет не совпадает с целевым — пропускаем
-        if (currentPixel.color != targetColor) continue;
+        if (currentPixel.color != targetColor) continue;  // Уже QRgb, работает
         
         // Закрашиваем пиксель
-        canvas.setPixel(x, y, Pixel(fillColor));
+        canvas.setPixel(x, y, Pixel(fillColor.rgba()));
         
         // Добавляем соседей
         pixels.push({x + 1, y});
@@ -438,3 +439,25 @@ std::string TextFactory::getToolName() const { return "Text"; }
 
 void TextFactory::setColor(const QColor& c) { color = c; }
 void TextFactory::setSize(int) {}
+
+void Canvas::loadFromImage(const QImage& image, int x, int y, int width, int height) {
+    QImage converted = image.convertToFormat(QImage::Format_ARGB32);
+    
+    isUndoing = true;
+    
+    int actualWidth = std::min(width, w - x);
+    int actualHeight = std::min(height, h - y);
+    
+    Pixel* canvasData = data.data();
+    
+    for (int row = 0; row < actualHeight; ++row) {
+        const QRgb* srcLine = reinterpret_cast<const QRgb*>(converted.scanLine(row));
+        Pixel* destLine = canvasData + (y + row) * w + x;
+        
+        for (int col = 0; col < actualWidth; ++col) {
+            destLine[col].color = srcLine[col];
+        }
+    }
+    
+    isUndoing = false;
+}

@@ -5656,3 +5656,95 @@ events:
         - "C:/msys64/mingw64/lib/cmake/Qt6/3rdparty/extra-cmake-modules/find-modules"
         - "C:/msys64/mingw64/lib/cmake/Qt6/3rdparty/kwin"
 ...
+
+---
+events:
+  -
+    kind: "find_package-v1"
+    backtrace:
+      - "C:/msys64/mingw64/lib/cmake/Qt6/Qt6Config.cmake:246 (find_package)"
+      - "CMakeLists.txt:11 (find_package)"
+    name: "Qt6Concurrent"
+    configs:
+      -
+        filename: "Qt6ConcurrentConfig.cmake"
+        kind: "cmake"
+      -
+        filename: "qt6concurrent-config.cmake"
+        kind: "cmake"
+    version_request:
+      exact: false
+    settings:
+      required: "optional"
+      quiet: false
+      global: false
+      policy_scope: true
+      bypass_provider: false
+      names:
+        - "Qt6Concurrent"
+      search_paths:
+        - "C:/msys64/mingw64/lib/cmake"
+      path_suffixes:
+        - ""
+      paths:
+        CMAKE_FIND_USE_CMAKE_PATH: false
+        CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+        CMAKE_FIND_USE_INSTALL_PREFIX: true
+        CMAKE_FIND_USE_PACKAGE_ROOT_PATH: true
+        CMAKE_FIND_USE_CMAKE_PACKAGE_REGISTRY: true
+        CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY: true
+        CMAKE_FIND_ROOT_PATH_MODE: "BOTH"
+    candidates:
+      -
+        path: "C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/pkgRedirects/Qt6ConcurrentConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/pkgRedirects/qt6concurrent-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/msys64/mingw64/lib/cmake/Qt6ConcurrentConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/msys64/mingw64/lib/cmake/qt6concurrent-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+    found:
+      path: "C:/msys64/mingw64/lib/cmake/Qt6Concurrent/Qt6ConcurrentConfig.cmake"
+      mode: "config"
+      version: "6.11.0"
+    search_context:
+      ENV{PATH}:
+        - "C:\\msys64\\mingw64\\bin"
+        - "C:\\msys64\\mingw64\\bin"
+        - "C:\\msys64\\mingw64\\bin"
+        - "C:\\msys64\\usr\\bin"
+        - "C:/mingw64/bin"
+        - "C:\\WINDOWS\\system32"
+        - "C:/WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:/WINDOWS/System32/WindowsPowerShell/v1.0/"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:/msys64/ucrt64/bin"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:/msys64/mingw64/bin"
+        - "C:\\Program Files\\Microsoft SQL Server\\150\\Tools\\Binn\\"
+        - "C:/Program Files/Microsoft SQL Server/Client SDK/ODBC/170/Tools/Binn/"
+        - "C:\\Program Files\\dotnet\\"
+        - "C:/msys64/mingw64/share/qt6/bin"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:/Program Files/Cloudflare/Cloudflare WARP/"
+        - "C:\\Users\\gankere\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:/Users/gankere/AppData/Local/Programs/Microsoft VS Code/bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/PainterQt"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/mingw64"
+        - "C:/Program Files"
+        - "C:/Program Files (x86)"
+        - "C:/Program Files/CMake"
+        - "C:/Program Files (x86)/PainterQt"
+...

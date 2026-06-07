@@ -8,7 +8,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Concurrent)
 qt_standard_project_setup()
 
 qt_add_executable(PainterQt
@@ -19,7 +19,7 @@ qt_add_executable(PainterQt
     canvasdialog.h canvasdialog.cpp
 )
 
-target_link_libraries(PainterQt PRIVATE Qt6::Widgets)
+target_link_libraries(PainterQt PRIVATE Qt6::Widgets Qt6::Concurrent)
 
 # АВТОМАТИЧЕСКОЕ КОПИРОВАНИЕ ИКОНОК ПРИ СБОРКЕ
 add_custom_command(TARGET PainterQt POST_BUILD

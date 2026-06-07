@@ -80,14 +80,14 @@ void QtCanvasWidget::updateCache() {
         for (int x = 0; x < canvas->getWidth(); ++x) {
             Pixel px = canvas->getPixel(x, y);
             if (!px.isEmpty()) {
-                p.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize, px.color);
+                p.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize, QColor::fromRgba(px.color));
             }
         }
     }
     cacheDirty = false;
 }
 
-void QtCanvasWidget::drawDirectlyOnCache(int canvasX, int canvasY, const QColor& color, int bSize) {
+void QtCanvasWidget::drawDirectlyOnCache(int canvasX, int canvasY, QRgb color, int bSize) {
     if (canvasCache.isNull()) {
         cacheDirty = true;
         return;
@@ -104,7 +104,7 @@ void QtCanvasWidget::drawDirectlyOnCache(int canvasX, int canvasY, const QColor&
         int x = (canvasX - radius) * pixelSize;
         int y = (canvasY - radius) * pixelSize;
         int size = bSize * pixelSize;
-        p.fillRect(x, y, size, size, color);
+        p.fillRect(x, y, size, size, QColor::fromRgba(color));
     } else {
         // Для кисти круг
         int radius = bSize / 2;
@@ -113,7 +113,7 @@ void QtCanvasWidget::drawDirectlyOnCache(int canvasX, int canvasY, const QColor&
                 if (dx*dx + dy*dy <= radius*radius) {
                     int screenX = (canvasX + dx) * pixelSize;
                     int screenY = (canvasY + dy) * pixelSize;
-                    p.fillRect(screenX, screenY, pixelSize, pixelSize, color);
+                    p.fillRect(screenX, screenY, pixelSize, pixelSize, QColor::fromRgba(color));
                 }
             }
         }
@@ -157,9 +157,9 @@ void QtCanvasWidget::drawLine(const QPoint& from, const QPoint& to) {
     int sx = (x1 < x2) ? 1 : -1, sy = (y1 < y2) ? 1 : -1;
     int err = dx - dy;
 
-    QColor drawColor = Qt::white;
+    QRgb drawColor = qRgb(255, 255, 255);
     EraserTool* eraser = dynamic_cast<EraserTool*>(activeTool);
-    if (!eraser) drawColor = activeToolColor;
+    if (!eraser) drawColor = activeToolColor.rgba();
 
     while (true) {
         activeTool->use(*canvas, x1, y1);
@@ -212,9 +212,9 @@ void QtCanvasWidget::mousePressEvent(QMouseEvent* event) {
         canvas->startBatch();
         activeTool->use(*canvas, x, y);
         
-        QColor drawColor = Qt::white;
+        QRgb drawColor = qRgb(255, 255, 255);
         EraserTool* eraser = dynamic_cast<EraserTool*>(activeTool);
-        if (!eraser) drawColor = activeToolColor;
+        if (!eraser) drawColor = activeToolColor.rgba();
         
         if (eraser) {
             eraseTextAtCanvasPos(x, y);
@@ -431,4 +431,3 @@ int QtCanvasWidget::getCanvasWidth() const {
 int QtCanvasWidget::getCanvasHeight() const {
     return canvas->getHeight();
 }
-
