@@ -64,4 +64,5 @@ private:
     void clearPreview();
     
     QList<TextItem> textItems;
+    void eraseTextAtCanvasPos(int canvasX, int canvasY);
 };

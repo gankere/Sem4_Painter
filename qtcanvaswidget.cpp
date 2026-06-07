@@ -144,6 +144,11 @@ void QtCanvasWidget::drawLine(const QPoint& from, const QPoint& to) {
 
     while (true) {
         activeTool->use(canvas, x1, y1);
+
+        if (eraser) {
+            eraseTextAtCanvasPos(x1, y1);
+        }
+
         drawDirectlyOnCache(x1, y1, drawColor, brushSize);
         
         if (x1 == x2 && y1 == y2) break;
@@ -192,6 +197,10 @@ void QtCanvasWidget::mousePressEvent(QMouseEvent* event) {
         EraserTool* eraser = dynamic_cast<EraserTool*>(activeTool);
         if (!eraser) drawColor = activeToolColor;
         
+        if (eraser) {
+            eraseTextAtCanvasPos(x, y);
+        }
+
         drawDirectlyOnCache(x, y, drawColor, brushSize);
         cacheDirty = false;
         update();
@@ -326,4 +335,34 @@ void QtCanvasWidget::clearPreview() {
         previewCache.fill(Qt::transparent);
     }
     hasPreview = false;
+}
+
+void QtCanvasWidget::eraseTextAtCanvasPos(int canvasX, int canvasY) {
+    // Центр ластика в экранных координатах
+    int centerX = canvasX * pixelSize + pixelSize / 2;
+    int centerY = canvasY * pixelSize + pixelSize / 2;
+    int radius = (brushSize * pixelSize) / 2;
+    
+    // Прямоугольник ластика
+    QRect eraserRect(centerX - radius, centerY - radius, radius * 2, radius * 2);
+    
+    // Шрифт для измерения текста
+    QFont font;
+    font.setPointSize(12);
+    QFontMetrics fm(font);
+    
+    bool changed = false;
+    
+    // Удаляем текст, если ластик пересекает его рамку
+    for (int i = textItems.size() - 1; i >= 0; --i) {
+        QRect textRect = fm.boundingRect(textItems[i].text);
+        textRect.translate(textItems[i].pos);
+        
+        if (eraserRect.intersects(textRect)) {
+            textItems.removeAt(i);
+            changed = true;
+        }
+    }
+    
+    if (changed) update();
 }

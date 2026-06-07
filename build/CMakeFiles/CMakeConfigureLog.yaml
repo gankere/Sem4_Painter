@@ -5,14 +5,14 @@ events:
     kind: "message-v1"
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineSystem.cmake:212 (message)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     message: |
       The system is: Windows - 10.0.26200 - AMD64
   -
     kind: "find-v1"
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeNinjaFindMake.cmake:5 (find_program)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_MAKE_PROGRAM"
     description: "Program used to build from build.ninja files."
@@ -84,7 +84,7 @@ events:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     mode: "file"
     variable: "src_in"
     description: "Path to a file."
@@ -130,7 +130,7 @@ events:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     message: |
       Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
       Compiler: C:/msys64/mingw64/bin/clang++.exe 
@@ -151,7 +151,7 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_AR"
     description: "Path to a program."
@@ -270,7 +270,7 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_RANLIB"
     description: "Path to a program."
@@ -389,7 +389,7 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_STRIP"
     description: "Path to a program."
@@ -508,7 +508,7 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_LINKER"
     description: "Path to a program."
@@ -627,7 +627,7 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_NM"
     description: "Path to a program."
@@ -746,7 +746,7 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_OBJDUMP"
     description: "Path to a program."
@@ -865,7 +865,7 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_OBJCOPY"
     description: "Path to a program."
@@ -984,7 +984,7 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_READELF"
     description: "Path to a program."
@@ -1103,7 +1103,7 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_DLLTOOL"
     description: "Path to a program."
@@ -1222,7 +1222,7 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_ADDR2LINE"
     description: "Path to a program."
@@ -1341,7 +1341,7 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_TAPI"
     description: "Path to a program."
@@ -1458,7 +1458,7 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/Compiler/Clang-FindBinUtils.cmake:26 (find_program)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:207 (include)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_CXX_COMPILER_AR"
     description: "LLVM archiver"
@@ -1740,7 +1740,7 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/Compiler/Clang-FindBinUtils.cmake:38 (find_program)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:207 (include)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_CXX_COMPILER_RANLIB"
     description: "Generate index for LLVM archive"
@@ -2022,7 +2022,7 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/Compiler/Clang-FindBinUtils.cmake:50 (find_program)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:207 (include)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS"
     description: "`clang-scan-deps` dependency scanner"
@@ -2255,7 +2255,7 @@ events:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/Platform/Windows-Clang.cmake:291 (__windows_compiler_clang_base)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/Platform/Windows-Clang-CXX.cmake:3 (__windows_compiler_clang)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeCXXInformation.cmake:48 (include)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_RC_COMPILER"
     description: "RC compiler"
@@ -2342,12 +2342,12 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-yd51e8"
-      binary: "C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-yd51e8"
+      source: "C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-36d0ns"
+      binary: "C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-36d0ns"
     cmakeVariables:
       CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "C:/msys64/mingw64/bin/clang-scan-deps.exe"
       CMAKE_CXX_FLAGS: ""
@@ -2358,16 +2358,16 @@ events:
       variable: "CMAKE_CXX_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: 'C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-yd51e8'
+        Change Dir: 'C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-36d0ns'
         
-        Run Build Command(s): C:/msys64/mingw64/bin/ninja.exe -v cmTC_87737
-        [1/2] C:\\msys64\\mingw64\\bin\\clang++.exe   -v -MD -MT CMakeFiles/cmTC_87737.dir/CMakeCXXCompilerABI.cpp.obj -MF CMakeFiles\\cmTC_87737.dir\\CMakeCXXCompilerABI.cpp.obj.d -o CMakeFiles/cmTC_87737.dir/CMakeCXXCompilerABI.cpp.obj -c "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp"
+        Run Build Command(s): C:/msys64/mingw64/bin/ninja.exe -v cmTC_97285
+        [1/2] C:\\msys64\\mingw64\\bin\\clang++.exe   -v -MD -MT CMakeFiles/cmTC_97285.dir/CMakeCXXCompilerABI.cpp.obj -MF CMakeFiles\\cmTC_97285.dir\\CMakeCXXCompilerABI.cpp.obj.d -o CMakeFiles/cmTC_97285.dir/CMakeCXXCompilerABI.cpp.obj -c "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp"
         clang version 22.1.4 (https://github.com/msys2/MINGW-packages 42681e05ad3617c25e48a935a48eddc72a3ac7e2)
         Target: x86_64-w64-windows-gnu
         Thread model: posix
         InstalledDir: C:/msys64/mingw64/bin
          (in-process)
-         "C:/msys64/mingw64/bin/clang++.exe" -cc1 -triple x86_64-w64-windows-gnu -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -mframe-pointer=none -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -fno-sized-deallocation -fno-use-init-array -target-cpu x86-64 -tune-cpu generic -debugger-tuning=gdb -fdebug-compilation-dir=C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-yd51e8 -v -fcoverage-compilation-dir=C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-yd51e8 -resource-dir C:/msys64/mingw64/lib/clang/22 -dependency-file "CMakeFiles\\\\cmTC_87737.dir\\\\CMakeCXXCompilerABI.cpp.obj.d" -MT CMakeFiles/cmTC_87737.dir/CMakeCXXCompilerABI.cpp.obj -sys-header-deps -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++ -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/backward -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/16.1.0 -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/16.1.0/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/16.1.0/backward -internal-isystem C:/msys64/mingw64/include/c++/16.1.0 -internal-isystem C:/msys64/mingw64/include/c++/16.1.0/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/include/c++/16.1.0/backward -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/c++ -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/c++/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/c++/backward -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1.0 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1.0/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1.0/backward -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1/backward -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16/backward -internal-isystem C:/msys64/mingw64/lib/clang/22/include -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/usr/include -internal-isystem C:/msys64/mingw64/include -fdeprecated-macro -ferror-limit 19 -fno-use-cxa-atexit -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fcxx-exceptions -fexceptions -exception-model=seh -faddrsig -o CMakeFiles/cmTC_87737.dir/CMakeCXXCompilerABI.cpp.obj -x c++ "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp"
+         "C:/msys64/mingw64/bin/clang++.exe" -cc1 -triple x86_64-w64-windows-gnu -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -mframe-pointer=none -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -fno-sized-deallocation -fno-use-init-array -target-cpu x86-64 -tune-cpu generic -debugger-tuning=gdb -fdebug-compilation-dir=C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-36d0ns -v -fcoverage-compilation-dir=C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-36d0ns -resource-dir C:/msys64/mingw64/lib/clang/22 -dependency-file "CMakeFiles\\\\cmTC_97285.dir\\\\CMakeCXXCompilerABI.cpp.obj.d" -MT CMakeFiles/cmTC_97285.dir/CMakeCXXCompilerABI.cpp.obj -sys-header-deps -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++ -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/backward -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/16.1.0 -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/16.1.0/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/16.1.0/backward -internal-isystem C:/msys64/mingw64/include/c++/16.1.0 -internal-isystem C:/msys64/mingw64/include/c++/16.1.0/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/include/c++/16.1.0/backward -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/c++ -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/c++/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/c++/backward -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1.0 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1.0/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1.0/backward -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1/backward -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16/backward -internal-isystem C:/msys64/mingw64/lib/clang/22/include -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/usr/include -internal-isystem C:/msys64/mingw64/include -fdeprecated-macro -ferror-limit 19 -fno-use-cxa-atexit -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fcxx-exceptions -fexceptions -exception-model=seh -faddrsig -o CMakeFiles/cmTC_97285.dir/CMakeCXXCompilerABI.cpp.obj -x c++ "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp"
         clang -cc1 version 22.1.4 based upon LLVM 22.1.4 default target x86_64-w64-windows-gnu
         ignoring nonexistent directory "C:/msys64/mingw64/x86_64-w64-mingw32/include/c++"
         ignoring nonexistent directory "C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/x86_64-w64-mingw32"
@@ -2397,12 +2397,12 @@ events:
          C:/msys64/mingw64/lib/clang/22/include
          C:/msys64/mingw64/include
         End of search list.
-        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\msys64\\mingw64\\bin\\clang++.exe  -v -Wl,-v CMakeFiles/cmTC_87737.dir/CMakeCXXCompilerABI.cpp.obj -o cmTC_87737.exe -Wl,--out-implib,libcmTC_87737.dll.a -Wl,--major-image-version,0,--minor-image-version,0   && cd ."
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\msys64\\mingw64\\bin\\clang++.exe  -v -Wl,-v CMakeFiles/cmTC_97285.dir/CMakeCXXCompilerABI.cpp.obj -o cmTC_97285.exe -Wl,--out-implib,libcmTC_97285.dll.a -Wl,--major-image-version,0,--minor-image-version,0   && cd ."
         clang version 22.1.4 (https://github.com/msys2/MINGW-packages 42681e05ad3617c25e48a935a48eddc72a3ac7e2)
         Target: x86_64-w64-windows-gnu
         Thread model: posix
         InstalledDir: C:/msys64/mingw64/bin
-         "C:/msys64/mingw64/bin/ld" -m i386pep -Bdynamic -o cmTC_87737.exe C:/msys64/mingw64/lib/crt2.o C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/crtbegin.o -LC:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0 -LC:/msys64/mingw64/x86_64-w64-mingw32/lib -LC:/msys64/mingw64/x86_64-w64-mingw32/mingw/lib -LC:/msys64/mingw64/lib -v CMakeFiles/cmTC_87737.dir/CMakeCXXCompilerABI.cpp.obj --out-implib libcmTC_87737.dll.a --major-image-version 0 --minor-image-version 0 -lstdc++ -lmingw32 -lgcc_s -lgcc -lmoldname -lmingwex -lmsvcrt -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32 -lmingw32 -lgcc_s -lgcc -lmoldname -lmingwex -lmsvcrt -lkernel32 C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/crtend.o
+         "C:/msys64/mingw64/bin/ld" -m i386pep -Bdynamic -o cmTC_97285.exe C:/msys64/mingw64/lib/crt2.o C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/crtbegin.o -LC:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0 -LC:/msys64/mingw64/x86_64-w64-mingw32/lib -LC:/msys64/mingw64/x86_64-w64-mingw32/mingw/lib -LC:/msys64/mingw64/lib -v CMakeFiles/cmTC_97285.dir/CMakeCXXCompilerABI.cpp.obj --out-implib libcmTC_97285.dll.a --major-image-version 0 --minor-image-version 0 -lstdc++ -lmingw32 -lgcc_s -lgcc -lmoldname -lmingwex -lmsvcrt -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32 -lmingw32 -lgcc_s -lgcc -lmoldname -lmingwex -lmsvcrt -lkernel32 C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/crtend.o
         GNU ld (GNU Binutils) 2.46
         
       exitCode: 0
@@ -2411,7 +2411,7 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:217 (message)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     message: |
       Parsed CXX implicit include dir info: rv=done
         found start of include info
@@ -2435,21 +2435,21 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     message: |
       Parsed CXX implicit link information:
         link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
         linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
-        ignore line: [Change Dir: 'C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-yd51e8']
+        ignore line: [Change Dir: 'C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-36d0ns']
         ignore line: []
-        ignore line: [Run Build Command(s): C:/msys64/mingw64/bin/ninja.exe -v cmTC_87737]
-        ignore line: [[1/2] C:\\msys64\\mingw64\\bin\\clang++.exe   -v -MD -MT CMakeFiles/cmTC_87737.dir/CMakeCXXCompilerABI.cpp.obj -MF CMakeFiles\\cmTC_87737.dir\\CMakeCXXCompilerABI.cpp.obj.d -o CMakeFiles/cmTC_87737.dir/CMakeCXXCompilerABI.cpp.obj -c "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp"]
+        ignore line: [Run Build Command(s): C:/msys64/mingw64/bin/ninja.exe -v cmTC_97285]
+        ignore line: [[1/2] C:\\msys64\\mingw64\\bin\\clang++.exe   -v -MD -MT CMakeFiles/cmTC_97285.dir/CMakeCXXCompilerABI.cpp.obj -MF CMakeFiles\\cmTC_97285.dir\\CMakeCXXCompilerABI.cpp.obj.d -o CMakeFiles/cmTC_97285.dir/CMakeCXXCompilerABI.cpp.obj -c "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp"]
         ignore line: [clang version 22.1.4 (https://github.com/msys2/MINGW-packages 42681e05ad3617c25e48a935a48eddc72a3ac7e2)]
         ignore line: [Target: x86_64-w64-windows-gnu]
         ignore line: [Thread model: posix]
         ignore line: [InstalledDir: C:/msys64/mingw64/bin]
         ignore line: [ (in-process)]
-        ignore line: [ "C:/msys64/mingw64/bin/clang++.exe" -cc1 -triple x86_64-w64-windows-gnu -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -mframe-pointer=none -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -fno-sized-deallocation -fno-use-init-array -target-cpu x86-64 -tune-cpu generic -debugger-tuning=gdb -fdebug-compilation-dir=C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-yd51e8 -v -fcoverage-compilation-dir=C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-yd51e8 -resource-dir C:/msys64/mingw64/lib/clang/22 -dependency-file "CMakeFiles\\\\cmTC_87737.dir\\\\CMakeCXXCompilerABI.cpp.obj.d" -MT CMakeFiles/cmTC_87737.dir/CMakeCXXCompilerABI.cpp.obj -sys-header-deps -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++ -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/backward -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/16.1.0 -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/16.1.0/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/16.1.0/backward -internal-isystem C:/msys64/mingw64/include/c++/16.1.0 -internal-isystem C:/msys64/mingw64/include/c++/16.1.0/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/include/c++/16.1.0/backward -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/c++ -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/c++/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/c++/backward -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1.0 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1.0/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1.0/backward -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1/backward -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16/backward -internal-isystem C:/msys64/mingw64/lib/clang/22/include -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/usr/include -internal-isystem C:/msys64/mingw64/include -fdeprecated-macro -ferror-limit 19 -fno-use-cxa-atexit -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fcxx-exceptions -fexceptions -exception-model=seh -faddrsig -o CMakeFiles/cmTC_87737.dir/CMakeCXXCompilerABI.cpp.obj -x c++ "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp"]
+        ignore line: [ "C:/msys64/mingw64/bin/clang++.exe" -cc1 -triple x86_64-w64-windows-gnu -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -mframe-pointer=none -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -fno-sized-deallocation -fno-use-init-array -target-cpu x86-64 -tune-cpu generic -debugger-tuning=gdb -fdebug-compilation-dir=C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-36d0ns -v -fcoverage-compilation-dir=C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-36d0ns -resource-dir C:/msys64/mingw64/lib/clang/22 -dependency-file "CMakeFiles\\\\cmTC_97285.dir\\\\CMakeCXXCompilerABI.cpp.obj.d" -MT CMakeFiles/cmTC_97285.dir/CMakeCXXCompilerABI.cpp.obj -sys-header-deps -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++ -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/backward -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/16.1.0 -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/16.1.0/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/16.1.0/backward -internal-isystem C:/msys64/mingw64/include/c++/16.1.0 -internal-isystem C:/msys64/mingw64/include/c++/16.1.0/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/include/c++/16.1.0/backward -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/c++ -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/c++/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/c++/backward -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1.0 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1.0/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1.0/backward -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16.1/backward -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16/x86_64-w64-mingw32 -internal-isystem C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/g++-v16/backward -internal-isystem C:/msys64/mingw64/lib/clang/22/include -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/include -internal-isystem C:/msys64/mingw64/x86_64-w64-mingw32/usr/include -internal-isystem C:/msys64/mingw64/include -fdeprecated-macro -ferror-limit 19 -fno-use-cxa-atexit -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fcxx-exceptions -fexceptions -exception-model=seh -faddrsig -o CMakeFiles/cmTC_97285.dir/CMakeCXXCompilerABI.cpp.obj -x c++ "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp"]
         ignore line: [clang -cc1 version 22.1.4 based upon LLVM 22.1.4 default target x86_64-w64-windows-gnu]
         ignore line: [ignoring nonexistent directory "C:/msys64/mingw64/x86_64-w64-mingw32/include/c++"]
         ignore line: [ignoring nonexistent directory "C:/msys64/mingw64/x86_64-w64-mingw32/include/c++/x86_64-w64-mingw32"]
@@ -2479,18 +2479,18 @@ events:
         ignore line: [ C:/msys64/mingw64/lib/clang/22/include]
         ignore line: [ C:/msys64/mingw64/include]
         ignore line: [End of search list.]
-        ignore line: [[2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\msys64\\mingw64\\bin\\clang++.exe  -v -Wl -v CMakeFiles/cmTC_87737.dir/CMakeCXXCompilerABI.cpp.obj -o cmTC_87737.exe -Wl --out-implib libcmTC_87737.dll.a -Wl --major-image-version 0 --minor-image-version 0   && cd ."]
+        ignore line: [[2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\msys64\\mingw64\\bin\\clang++.exe  -v -Wl -v CMakeFiles/cmTC_97285.dir/CMakeCXXCompilerABI.cpp.obj -o cmTC_97285.exe -Wl --out-implib libcmTC_97285.dll.a -Wl --major-image-version 0 --minor-image-version 0   && cd ."]
         ignore line: [clang version 22.1.4 (https://github.com/msys2/MINGW-packages 42681e05ad3617c25e48a935a48eddc72a3ac7e2)]
         ignore line: [Target: x86_64-w64-windows-gnu]
         ignore line: [Thread model: posix]
         ignore line: [InstalledDir: C:/msys64/mingw64/bin]
-        link line: [ "C:/msys64/mingw64/bin/ld" -m i386pep -Bdynamic -o cmTC_87737.exe C:/msys64/mingw64/lib/crt2.o C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/crtbegin.o -LC:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0 -LC:/msys64/mingw64/x86_64-w64-mingw32/lib -LC:/msys64/mingw64/x86_64-w64-mingw32/mingw/lib -LC:/msys64/mingw64/lib -v CMakeFiles/cmTC_87737.dir/CMakeCXXCompilerABI.cpp.obj --out-implib libcmTC_87737.dll.a --major-image-version 0 --minor-image-version 0 -lstdc++ -lmingw32 -lgcc_s -lgcc -lmoldname -lmingwex -lmsvcrt -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32 -lmingw32 -lgcc_s -lgcc -lmoldname -lmingwex -lmsvcrt -lkernel32 C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/crtend.o]
+        link line: [ "C:/msys64/mingw64/bin/ld" -m i386pep -Bdynamic -o cmTC_97285.exe C:/msys64/mingw64/lib/crt2.o C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/crtbegin.o -LC:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0 -LC:/msys64/mingw64/x86_64-w64-mingw32/lib -LC:/msys64/mingw64/x86_64-w64-mingw32/mingw/lib -LC:/msys64/mingw64/lib -v CMakeFiles/cmTC_97285.dir/CMakeCXXCompilerABI.cpp.obj --out-implib libcmTC_97285.dll.a --major-image-version 0 --minor-image-version 0 -lstdc++ -lmingw32 -lgcc_s -lgcc -lmoldname -lmingwex -lmsvcrt -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32 -lmingw32 -lgcc_s -lgcc -lmoldname -lmingwex -lmsvcrt -lkernel32 C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/crtend.o]
           arg [C:/msys64/mingw64/bin/ld] ==> ignore
           arg [-m] ==> ignore
           arg [i386pep] ==> ignore
           arg [-Bdynamic] ==> search dynamic
           arg [-o] ==> ignore
-          arg [cmTC_87737.exe] ==> ignore
+          arg [cmTC_97285.exe] ==> ignore
           arg [C:/msys64/mingw64/lib/crt2.o] ==> obj [C:/msys64/mingw64/lib/crt2.o]
           arg [C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/crtbegin.o] ==> obj [C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/crtbegin.o]
           arg [-LC:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0] ==> dir [C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0]
@@ -2498,9 +2498,9 @@ events:
           arg [-LC:/msys64/mingw64/x86_64-w64-mingw32/mingw/lib] ==> dir [C:/msys64/mingw64/x86_64-w64-mingw32/mingw/lib]
           arg [-LC:/msys64/mingw64/lib] ==> dir [C:/msys64/mingw64/lib]
           arg [-v] ==> ignore
-          arg [CMakeFiles/cmTC_87737.dir/CMakeCXXCompilerABI.cpp.obj] ==> ignore
+          arg [CMakeFiles/cmTC_97285.dir/CMakeCXXCompilerABI.cpp.obj] ==> ignore
           arg [--out-implib] ==> ignore
-          arg [libcmTC_87737.dll.a] ==> ignore
+          arg [libcmTC_97285.dll.a] ==> ignore
           arg [--major-image-version] ==> ignore
           arg [0] ==> ignore
           arg [--minor-image-version] ==> ignore
@@ -2544,7 +2544,7 @@ events:
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/Internal/CMakeDetermineLinkerId.cmake:38 (message)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:299 (cmake_determine_linker_id)"
       - "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:31 (project)"
+      - "CMakeLists.txt:2 (project)"
     message: |
       Running the CXX compiler's linker: "C:/msys64/mingw64/bin/ld" "-v"
       GNU ld (GNU Binutils) 2.46
@@ -2560,12 +2560,12 @@ events:
       - "C:/msys64/mingw64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:36 (find_dependency)"
       - "C:/msys64/mingw64/lib/cmake/Qt6/Qt6Dependencies.cmake:38 (_qt_internal_find_third_party_dependencies)"
       - "C:/msys64/mingw64/lib/cmake/Qt6/Qt6Config.cmake:185 (include)"
-      - "CMakeLists.txt:41 (find_package)"
+      - "CMakeLists.txt:11 (find_package)"
     checks:
       - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
     directories:
-      source: "C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-2xfoqf"
-      binary: "C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-2xfoqf"
+      source: "C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-deh8z3"
+      binary: "C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-deh8z3"
     cmakeVariables:
       CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "C:/msys64/mingw64/bin/clang-scan-deps.exe"
       CMAKE_CXX_FLAGS: ""
@@ -2576,11 +2576,11 @@ events:
       variable: "CMAKE_HAVE_LIBC_PTHREAD"
       cached: true
       stdout: |
-        Change Dir: 'C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-2xfoqf'
+        Change Dir: 'C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-deh8z3'
         
-        Run Build Command(s): C:/msys64/mingw64/bin/ninja.exe -v cmTC_5f81b
-        [1/2] C:\\msys64\\mingw64\\bin\\clang++.exe -DCMAKE_HAVE_LIBC_PTHREAD  -std=gnu++17 -MD -MT CMakeFiles/cmTC_5f81b.dir/src.cxx.obj -MF CMakeFiles\\cmTC_5f81b.dir\\src.cxx.obj.d -o CMakeFiles/cmTC_5f81b.dir/src.cxx.obj -c C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-2xfoqf/src.cxx
-        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\msys64\\mingw64\\bin\\clang++.exe   CMakeFiles/cmTC_5f81b.dir/src.cxx.obj -o cmTC_5f81b.exe -Wl,--out-implib,libcmTC_5f81b.dll.a -Wl,--major-image-version,0,--minor-image-version,0  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 && cd ."
+        Run Build Command(s): C:/msys64/mingw64/bin/ninja.exe -v cmTC_d71bd
+        [1/2] C:\\msys64\\mingw64\\bin\\clang++.exe -DCMAKE_HAVE_LIBC_PTHREAD  -std=gnu++17 -MD -MT CMakeFiles/cmTC_d71bd.dir/src.cxx.obj -MF CMakeFiles\\cmTC_d71bd.dir\\src.cxx.obj.d -o CMakeFiles/cmTC_d71bd.dir/src.cxx.obj -c C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-deh8z3/src.cxx
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\msys64\\mingw64\\bin\\clang++.exe   CMakeFiles/cmTC_d71bd.dir/src.cxx.obj -o cmTC_d71bd.exe -Wl,--out-implib,libcmTC_d71bd.dll.a -Wl,--major-image-version,0,--minor-image-version,0  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 && cd ."
         
       exitCode: 0
   -
@@ -2593,7 +2593,7 @@ events:
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsDependencies.cmake:42 (_qt_internal_find_tool_dependencies)"
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsConfig.cmake:40 (include)"
       - "C:/msys64/mingw64/lib/cmake/Qt6/Qt6Config.cmake:246 (find_package)"
-      - "CMakeLists.txt:41 (find_package)"
+      - "CMakeLists.txt:11 (find_package)"
     name: "Qt6CoreTools"
     configs:
       -
@@ -2690,7 +2690,7 @@ events:
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsDependencies.cmake:42 (_qt_internal_find_tool_dependencies)"
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsConfig.cmake:40 (include)"
       - "C:/msys64/mingw64/lib/cmake/Qt6/Qt6Config.cmake:246 (find_package)"
-      - "CMakeLists.txt:41 (find_package)"
+      - "CMakeLists.txt:11 (find_package)"
     name: "Qt6GuiTools"
     configs:
       -
@@ -2784,7 +2784,7 @@ events:
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsDependencies.cmake:42 (_qt_internal_find_tool_dependencies)"
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsConfig.cmake:40 (include)"
       - "C:/msys64/mingw64/lib/cmake/Qt6/Qt6Config.cmake:246 (find_package)"
-      - "CMakeLists.txt:41 (find_package)"
+      - "CMakeLists.txt:11 (find_package)"
     name: "Qt6WidgetsTools"
     configs:
       -
@@ -2888,12 +2888,12 @@ events:
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsDependencies.cmake:50 (_qt_internal_find_qt_dependencies)"
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsConfig.cmake:40 (include)"
       - "C:/msys64/mingw64/lib/cmake/Qt6/Qt6Config.cmake:246 (find_package)"
-      - "CMakeLists.txt:41 (find_package)"
+      - "CMakeLists.txt:11 (find_package)"
     checks:
       - "Performing Test HAVE_STDATOMIC"
     directories:
-      source: "C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-uc6wk4"
-      binary: "C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-uc6wk4"
+      source: "C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-vaond3"
+      binary: "C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-vaond3"
     cmakeVariables:
       CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "C:/msys64/mingw64/bin/clang-scan-deps.exe"
       CMAKE_CXX_FLAGS: ""
@@ -2904,11 +2904,11 @@ events:
       variable: "HAVE_STDATOMIC"
       cached: true
       stdout: |
-        Change Dir: 'C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-uc6wk4'
+        Change Dir: 'C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-vaond3'
         
-        Run Build Command(s): C:/msys64/mingw64/bin/ninja.exe -v cmTC_f8214
-        [1/2] C:\\msys64\\mingw64\\bin\\clang++.exe -DHAVE_STDATOMIC  -std=gnu++17 -MD -MT CMakeFiles/cmTC_f8214.dir/src.cxx.obj -MF CMakeFiles\\cmTC_f8214.dir\\src.cxx.obj.d -o CMakeFiles/cmTC_f8214.dir/src.cxx.obj -c C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-uc6wk4/src.cxx
-        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\msys64\\mingw64\\bin\\clang++.exe   CMakeFiles/cmTC_f8214.dir/src.cxx.obj -o cmTC_f8214.exe -Wl,--out-implib,libcmTC_f8214.dll.a -Wl,--major-image-version,0,--minor-image-version,0  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 && cd ."
+        Run Build Command(s): C:/msys64/mingw64/bin/ninja.exe -v cmTC_99ac0
+        [1/2] C:\\msys64\\mingw64\\bin\\clang++.exe -DHAVE_STDATOMIC  -std=gnu++17 -MD -MT CMakeFiles/cmTC_99ac0.dir/src.cxx.obj -MF CMakeFiles\\cmTC_99ac0.dir\\src.cxx.obj.d -o CMakeFiles/cmTC_99ac0.dir/src.cxx.obj -c C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/CMakeScratch/TryCompile-vaond3/src.cxx
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\msys64\\mingw64\\bin\\clang++.exe   CMakeFiles/cmTC_99ac0.dir/src.cxx.obj -o cmTC_99ac0.exe -Wl,--out-implib,libcmTC_99ac0.dll.a -Wl,--major-image-version,0,--minor-image-version,0  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 && cd ."
         
       exitCode: 0
   -
@@ -2925,7 +2925,7 @@ events:
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsDependencies.cmake:50 (_qt_internal_find_qt_dependencies)"
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsConfig.cmake:40 (include)"
       - "C:/msys64/mingw64/lib/cmake/Qt6/Qt6Config.cmake:246 (find_package)"
-      - "CMakeLists.txt:41 (find_package)"
+      - "CMakeLists.txt:11 (find_package)"
     name: "Qt6EntryPointPrivate"
     configs:
       -
@@ -3024,7 +3024,7 @@ events:
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsDependencies.cmake:50 (_qt_internal_find_qt_dependencies)"
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsConfig.cmake:40 (include)"
       - "C:/msys64/mingw64/lib/cmake/Qt6/Qt6Config.cmake:246 (find_package)"
-      - "CMakeLists.txt:41 (find_package)"
+      - "CMakeLists.txt:11 (find_package)"
     mode: "program"
     variable: "WINDEPLOYQT_EXECUTABLE"
     description: "Path to a program."
@@ -3114,7 +3114,7 @@ events:
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsDependencies.cmake:50 (_qt_internal_find_qt_dependencies)"
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsConfig.cmake:40 (include)"
       - "C:/msys64/mingw64/lib/cmake/Qt6/Qt6Config.cmake:246 (find_package)"
-      - "CMakeLists.txt:41 (find_package)"
+      - "CMakeLists.txt:11 (find_package)"
     name: "Qt6Core"
     configs:
       -
@@ -3231,7 +3231,7 @@ events:
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsDependencies.cmake:50 (_qt_internal_find_qt_dependencies)"
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsConfig.cmake:40 (include)"
       - "C:/msys64/mingw64/lib/cmake/Qt6/Qt6Config.cmake:246 (find_package)"
-      - "CMakeLists.txt:41 (find_package)"
+      - "CMakeLists.txt:11 (find_package)"
     mode: "path"
     variable: "Vulkan_INCLUDE_DIR"
     description: "Path to a file."
@@ -3350,7 +3350,7 @@ events:
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsDependencies.cmake:50 (_qt_internal_find_qt_dependencies)"
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsConfig.cmake:40 (include)"
       - "C:/msys64/mingw64/lib/cmake/Qt6/Qt6Config.cmake:246 (find_package)"
-      - "CMakeLists.txt:41 (find_package)"
+      - "CMakeLists.txt:11 (find_package)"
     mode: "library"
     variable: "Vulkan_LIBRARY"
     description: "Path to a library."
@@ -3477,7 +3477,7 @@ events:
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsDependencies.cmake:50 (_qt_internal_find_qt_dependencies)"
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsConfig.cmake:40 (include)"
       - "C:/msys64/mingw64/lib/cmake/Qt6/Qt6Config.cmake:246 (find_package)"
-      - "CMakeLists.txt:41 (find_package)"
+      - "CMakeLists.txt:11 (find_package)"
     mode: "program"
     variable: "Vulkan_GLSLC_EXECUTABLE"
     description: "Path to a program."
@@ -3674,7 +3674,7 @@ events:
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsDependencies.cmake:50 (_qt_internal_find_qt_dependencies)"
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsConfig.cmake:40 (include)"
       - "C:/msys64/mingw64/lib/cmake/Qt6/Qt6Config.cmake:246 (find_package)"
-      - "CMakeLists.txt:41 (find_package)"
+      - "CMakeLists.txt:11 (find_package)"
     mode: "program"
     variable: "Vulkan_GLSLANG_VALIDATOR_EXECUTABLE"
     description: "Path to a program."
@@ -3866,7 +3866,7 @@ events:
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsDependencies.cmake:50 (_qt_internal_find_qt_dependencies)"
       - "C:/msys64/mingw64/lib/cmake/Qt6Widgets/Qt6WidgetsConfig.cmake:40 (include)"
       - "C:/msys64/mingw64/lib/cmake/Qt6/Qt6Config.cmake:246 (find_package)"
-      - "CMakeLists.txt:41 (find_package)"
+      - "CMakeLists.txt:11 (find_package)"
     name: "Qt6Gui"
     configs:
       -
@@ -3973,7 +3973,7 @@ events:
     kind: "find_package-v1"
     backtrace:
       - "C:/msys64/mingw64/lib/cmake/Qt6/Qt6Config.cmake:246 (find_package)"
-      - "CMakeLists.txt:41 (find_package)"
+      - "CMakeLists.txt:11 (find_package)"
     name: "Qt6Widgets"
     configs:
       -
@@ -4076,7 +4076,7 @@ events:
   -
     kind: "find_package-v1"
     backtrace:
-      - "CMakeLists.txt:41 (find_package)"
+      - "CMakeLists.txt:11 (find_package)"
     name: "Qt6"
     components:
       -

@@ -169,16 +169,72 @@ void ShapeTool::drawRect(ICanvas& canvas, int x1, int y1, int x2, int y2) {
     int maxX = std::max(x1, x2);
     int minY = std::min(y1, y2);
     int maxY = std::max(y1, y2);
+    
+    int width = maxX - minX + 1;
+    int height = maxY - minY + 1;
 
+    // точка
+    if (width == 1 && height == 1) {
+        int half = size / 2;
+        for (int dy = -half; dy < size - half; ++dy) {
+            for (int dx = -half; dx < size - half; ++dx) {
+                canvas.setPixel(minX + dx, minY + dy, Pixel(color));
+            }
+        }
+        return;
+    }
+    
+    // горизонтальная линия
+    if (height == 1) {
+        for (int x = minX; x <= maxX; ++x) {
+            for (int dy = -size/2; dy < size - size/2; ++dy) {
+                canvas.setPixel(x, minY + dy, Pixel(color));
+            }
+        }
+        return;
+    }
+    
+    // вертикальная линия
+    if (width == 1) {
+        for (int y = minY; y <= maxY; ++y) {
+            for (int dx = -size/2; dx < size - size/2; ++dx) {
+                canvas.setPixel(minX + dx, y, Pixel(color));
+            }
+        }
+        return;
+    }
+
+    // маленький прямоугольник
+    if (width <= size || height <= size) {
+        for (int y = minY - size/2; y <= maxY + size - size/2; ++y) {
+            for (int x = minX - size/2; x <= maxX + size - size/2; ++x) {
+                canvas.setPixel(x, y, Pixel(color));
+            }
+        }
+        return;
+    }
+
+    // Обычный случай: большой прямоугольник
     for (int x = minX; x <= maxX; ++x) {
         for (int i = 0; i < size; ++i) {
             canvas.setPixel(x, minY + i, Pixel(color));
+        }
+    }
+
+    for (int x = minX; x <= maxX; ++x) {
+        for (int i = 0; i < size; ++i) {
             canvas.setPixel(x, maxY - i, Pixel(color));
         }
     }
+    
     for (int y = minY; y <= maxY; ++y) {
         for (int i = 0; i < size; ++i) {
             canvas.setPixel(minX + i, y, Pixel(color));
+        }
+    }
+
+    for (int y = minY; y <= maxY; ++y) {
+        for (int i = 0; i < size; ++i) {
             canvas.setPixel(maxX - i, y, Pixel(color));
         }
     }
@@ -189,25 +245,49 @@ void ShapeTool::drawEllipse(ICanvas& canvas, int x1, int y1, int x2, int y2) {
     int centerY = (y1 + y2) / 2;
     int radiusX = std::abs(x2 - x1) / 2;
     int radiusY = std::abs(y2 - y1) / 2;
+    int brushRadius = size / 2;
 
-    if (radiusX == 0 && radiusY == 0) return;
+    // Вырожденный случай: точка (клик без движения)
+    if (radiusX == 0 && radiusY == 0) {
+        for (int dy = -brushRadius; dy <= brushRadius; ++dy) {
+            for (int dx = -brushRadius; dx <= brushRadius; ++dx) {
+                if (dx*dx + dy*dy <= brushRadius*brushRadius) {
+                    canvas.setPixel(centerX + dx, centerY + dy, Pixel(color));
+                }
+            }
+        }
+        return;
+    }
     
-    // Если один из радиусов очень маленький — рисуем линию или точку
+    // Вырожденный случай: вертикальная линия
     if (radiusX == 0) {
         for (int y = centerY - radiusY; y <= centerY + radiusY; ++y) {
-            canvas.setPixel(centerX, y, Pixel(color));
+            for (int dy = -brushRadius; dy <= brushRadius; ++dy) {
+                for (int dx = -brushRadius; dx <= brushRadius; ++dx) {
+                    if (dx*dx + dy*dy <= brushRadius*brushRadius) {
+                        canvas.setPixel(centerX + dx, y + dy, Pixel(color));
+                    }
+                }
+            }
         }
         return;
     }
+    
+    // Вырожденный случай: горизонтальная линия
     if (radiusY == 0) {
         for (int x = centerX - radiusX; x <= centerX + radiusX; ++x) {
-            canvas.setPixel(x, centerY, Pixel(color));
+            for (int dy = -brushRadius; dy <= brushRadius; ++dy) {
+                for (int dx = -brushRadius; dx <= brushRadius; ++dx) {
+                    if (dx*dx + dy*dy <= brushRadius*brushRadius) {
+                        canvas.setPixel(x + dx, centerY + dy, Pixel(color));
+                    }
+                }
+            }
         }
         return;
     }
 
-    int brushRadius = size / 2;
-    
+    // ← Обычный случай: эллипс с круглой кистью
     int steps = std::max(radiusX, radiusY) * 8;
     if (steps < 100) steps = 100;
     
@@ -216,6 +296,7 @@ void ShapeTool::drawEllipse(ICanvas& canvas, int x1, int y1, int x2, int y2) {
         int x = centerX + static_cast<int>(radiusX * std::cos(angle) + 0.5);
         int y = centerY + static_cast<int>(radiusY * std::sin(angle) + 0.5);
 
+        // Круглая кисть в каждой точке эллипса
         for (int dy = -brushRadius; dy <= brushRadius; ++dy) {
             for (int dx = -brushRadius; dx <= brushRadius; ++dx) {
                 if (dx*dx + dy*dy <= brushRadius*brushRadius) {
