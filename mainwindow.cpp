@@ -292,16 +292,17 @@ MainWindow::MainWindow(QWidget* parent)
     setCentralWidget(centralWidget);
     resize(1100, 750);
 
-    // Глобальный шорткат Ctrl+Z
     undoShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Z), this);
     undoShortcut->setContext(Qt::ApplicationShortcut);
     connect(undoShortcut, &QShortcut::activated, this, [this]() {
         if (canvas) {
             canvas->undo();
-            canvasWidget->setCacheDirty();  // <-- ДОБАВИТЬ!
+            canvasWidget->setCacheDirty();
             canvasWidget->update();
         }
     });
+    if (!canvas) {createCanvas(800, 600);}
+    onToolClicked(0);
 }
 
 
@@ -503,6 +504,16 @@ void MainWindow::onLoadClicked() {
         return;
     }
     
+    const int MAX_WIDTH = 2000;
+    const int MAX_HEIGHT = 2000;
+    
+    if (image.width() > MAX_WIDTH || image.height() > MAX_HEIGHT) {
+        int cropW = std::min(image.width(), MAX_WIDTH);
+        int cropH = std::min(image.height(), MAX_HEIGHT);
+        
+        image = image.copy(0, 0, cropW, cropH);
+    }
+    
     int imgWidth = image.width();
     int imgHeight = image.height();
     
@@ -511,7 +522,7 @@ void MainWindow::onLoadClicked() {
         if (canvas) {
             reply = QMessageBox::question(
                 this, "Создать новый холст?", 
-                QString("Размер изображения (%1x%2) больше текущего холста.\nСоздать новый холст?")
+                QString("Размер изображения (%1×%2) больше текущего холста.\nСоздать новый холст?")
                     .arg(imgWidth).arg(imgHeight),
                 QMessageBox::Yes | QMessageBox::No
             );

@@ -18,7 +18,7 @@ QtCanvasWidget::QtCanvasWidget(ICanvas* canvas, QWidget* parent)
       canvasCache(),
       cacheDirty(true),
       shapeStartCanvas(),
-      previewCache(),
+      previewImage(),
       hasPreview(false)
 {
     setFocusPolicy(Qt::StrongFocus);
@@ -35,7 +35,7 @@ QtCanvasWidget::~QtCanvasWidget() {
     delete currentFactory;
 }
 
-//Смена инструмента
+// Смена инструмента
 void QtCanvasWidget::updateFactory(IToolFactory* factory) { 
     delete activeTool;
     delete currentFactory;
@@ -97,26 +97,12 @@ void QtCanvasWidget::drawDirectlyOnCache(int canvasX, int canvasY, QRgb color, i
     p.setPen(Qt::NoPen);
     
     bool isEraser = dynamic_cast<EraserTool*>(activeTool) != nullptr;
-
-    if (isEraser) {
-        // Для ластика квадрат
-        int radius = bSize / 2;
-        int x = (canvasX - radius) * pixelSize;
-        int y = (canvasY - radius) * pixelSize;
-        int size = bSize * pixelSize;
-        p.fillRect(x, y, size, size, QColor::fromRgba(color));
-    } else {
-        // Для кисти круг
-        int radius = bSize / 2;
-        for (int dy = -radius; dy <= radius; ++dy) {
-            for (int dx = -radius; dx <= radius; ++dx) {
-                if (dx*dx + dy*dy <= radius*radius) {
-                    int screenX = (canvasX + dx) * pixelSize;
-                    int screenY = (canvasY + dy) * pixelSize;
-                    p.fillRect(screenX, screenY, pixelSize, pixelSize, QColor::fromRgba(color));
-                }
-            }
-        }
+    QVector<QPoint> mask = isEraser ? getEraserMask(bSize) : getBrushMask(bSize);
+    
+    for (const QPoint& offset : mask) {
+        int screenX = (canvasX + offset.x()) * pixelSize;
+        int screenY = (canvasY + offset.y()) * pixelSize;
+        p.fillRect(screenX, screenY, pixelSize, pixelSize, QColor::fromRgba(color));
     }
     p.end();
 }
@@ -127,8 +113,11 @@ void QtCanvasWidget::paintEvent(QPaintEvent*) {
     QPainter painter(this);
     painter.drawPixmap(0, 0, canvasCache);
     
-    if (hasPreview && !previewCache.isNull()) {
-        painter.drawPixmap(0, 0, previewCache);
+    if (hasPreview && !previewImage.isNull()) {
+        painter.drawImage(0, 0, previewImage.scaled(
+            canvasCache.width(), canvasCache.height(),
+            Qt::IgnoreAspectRatio, Qt::FastTransformation
+        ));
     }
     
     QFont font;
@@ -157,9 +146,8 @@ void QtCanvasWidget::drawLine(const QPoint& from, const QPoint& to) {
     int sx = (x1 < x2) ? 1 : -1, sy = (y1 < y2) ? 1 : -1;
     int err = dx - dy;
 
-    QRgb drawColor = qRgb(255, 255, 255);
     EraserTool* eraser = dynamic_cast<EraserTool*>(activeTool);
-    if (!eraser) drawColor = activeToolColor.rgba();
+    QRgb drawColor = eraser ? qRgb(255, 255, 255) : activeToolColor.rgba();
 
     while (true) {
         activeTool->use(*canvas, x1, y1);
@@ -212,9 +200,8 @@ void QtCanvasWidget::mousePressEvent(QMouseEvent* event) {
         canvas->startBatch();
         activeTool->use(*canvas, x, y);
         
-        QRgb drawColor = qRgb(255, 255, 255);
         EraserTool* eraser = dynamic_cast<EraserTool*>(activeTool);
-        if (!eraser) drawColor = activeToolColor.rgba();
+        QRgb drawColor = eraser ? qRgb(255, 255, 255) : activeToolColor.rgba();
         
         if (eraser) {
             eraseTextAtCanvasPos(x, y);
@@ -309,26 +296,22 @@ void QtCanvasWidget::showTextDialog(const QPoint& pos) {
 }
 
 void QtCanvasWidget::drawPreview(const QPoint& startCanvas, const QPoint& currentCanvas) {
-    
     int canvasW = canvas->getWidth();
     int canvasH = canvas->getHeight();
-    int cacheW = canvasW * pixelSize;
-    int cacheH = canvasH * pixelSize;
     
-    // Создаём QImage для preview
-    if (previewImage.isNull() || previewImage.size() != QSize(cacheW, cacheH)) {
-        previewImage = QImage(cacheW, cacheH, QImage::Format_ARGB32);
+    if (previewImage.isNull() || previewImage.size() != QSize(canvasW, canvasH)) {
+        previewImage = QImage(canvasW, canvasH, QImage::Format_ARGB32);
     }
-    previewImage.fill(qRgba(0, 0, 0, 0));  // Прозрачный фон
+    previewImage.fill(qRgba(0, 0, 0, 0));
     
-    // Получаем доступ к памяти
     ShapeTool* shapeTool = dynamic_cast<ShapeTool*>(activeTool);
     if (!shapeTool) return;
     
     QRgb color = activeToolColor.rgba();
     int brushRadius = brushSize / 2;
     
-    // Рисуем фигуру пикселями (так же, как в ShapeTool)
+    QRgb* imageData = reinterpret_cast<QRgb*>(previewImage.bits());
+    
     switch (shapeTool->getShapeType()) {
         case ShapeTool::Line: {
             int x1 = startCanvas.x(), y1 = startCanvas.y();
@@ -339,22 +322,14 @@ void QtCanvasWidget::drawPreview(const QPoint& startCanvas, const QPoint& curren
             int err = dx - dy;
             
             while (true) {
-                // Рисуем кисть в точке (x1, y1)
                 for (int bdy = -brushRadius; bdy <= brushRadius; ++bdy) {
+                    int py = y1 + bdy;
+                    if (py < 0 || py >= canvasH) continue;
                     for (int bdx = -brushRadius; bdx <= brushRadius; ++bdx) {
                         if (bdx*bdx + bdy*bdy <= brushRadius*brushRadius) {
                             int px = x1 + bdx;
-                            int py = y1 + bdy;
-                            if (px >= 0 && px < canvasW && py >= 0 && py < canvasH) {
-                                // Заполняем блок pixelSize × pixelSize
-                                int screenX = px * pixelSize;
-                                int screenY = py * pixelSize;
-                                for (int py2 = 0; py2 < pixelSize; ++py2) {
-                                    QRgb* destLine = reinterpret_cast<QRgb*>(previewImage.scanLine(screenY + py2));
-                                    for (int px2 = 0; px2 < pixelSize; ++px2) {
-                                        destLine[screenX + px2] = color;
-                                    }
-                                }
+                            if (px >= 0 && px < canvasW) {
+                                imageData[py * canvasW + px] = color;
                             }
                         }
                     }
@@ -374,34 +349,25 @@ void QtCanvasWidget::drawPreview(const QPoint& startCanvas, const QPoint& curren
             int minY = std::min(startCanvas.y(), currentCanvas.y());
             int maxY = std::max(startCanvas.y(), currentCanvas.y());
             
-            int halfSize = brushRadius;  // Толщина рамки
+            int halfSize = brushRadius;
             
-            // Рисуем РАМКУ (не заполненный!)
             for (int y = minY - halfSize; y <= maxY + halfSize; ++y) {
+                if (y < 0 || y >= canvasH) continue;
                 for (int x = minX - halfSize; x <= maxX + halfSize; ++x) {
-                    if (x >= 0 && x < canvasW && y >= 0 && y < canvasH) {
-                        // Проверяем, находится ли пиксель в рамке
-                        bool nearTop = (y >= minY - halfSize && y <= minY + halfSize);
-                        bool nearBottom = (y >= maxY - halfSize && y <= maxY + halfSize);
-                        bool nearLeft = (x >= minX - halfSize && x <= minX + halfSize);
-                        bool nearRight = (x >= maxX - halfSize && x <= maxX + halfSize);
-                        
-                        // Рисуем только если в рамке
-                        if (nearTop || nearBottom || nearLeft || nearRight) {
-                            int screenX = x * pixelSize;
-                            int screenY = y * pixelSize;
-                            for (int py = 0; py < pixelSize; ++py) {
-                                QRgb* destLine = reinterpret_cast<QRgb*>(previewImage.scanLine(screenY + py));
-                                for (int px = 0; px < pixelSize; ++px) {
-                                    destLine[screenX + px] = color;
-                                }
-                            }
-                        }
+                    if (x < 0 || x >= canvasW) continue;
+                    
+                    bool nearTop = (y >= minY - halfSize && y <= minY + halfSize);
+                    bool nearBottom = (y >= maxY - halfSize && y <= maxY + halfSize);
+                    bool nearLeft = (x >= minX - halfSize && x <= minX + halfSize);
+                    bool nearRight = (x >= maxX - halfSize && x <= maxX + halfSize);
+                    
+                    if (nearTop || nearBottom || nearLeft || nearRight) {
+                        imageData[y * canvasW + x] = color;
                     }
                 }
             }
-        break;
-}
+            break;
+        }
         
         case ShapeTool::Ellipse: {
             int centerX = (startCanvas.x() + currentCanvas.x()) / 2;
@@ -411,6 +377,7 @@ void QtCanvasWidget::drawPreview(const QPoint& startCanvas, const QPoint& curren
             
             int steps = std::max(radiusX, radiusY) * 8;
             if (steps < 100) steps = 100;
+            if (steps > 1000) steps = 1000;
             
             for (int i = 0; i < steps; ++i) {
                 double angle = 2.0 * 3.14159265359 * i / steps;
@@ -418,18 +385,13 @@ void QtCanvasWidget::drawPreview(const QPoint& startCanvas, const QPoint& curren
                 int y = centerY + static_cast<int>(radiusY * std::sin(angle) + 0.5);
                 
                 for (int bdy = -brushRadius; bdy <= brushRadius; ++bdy) {
+                    int py = y + bdy;
+                    if (py < 0 || py >= canvasH) continue;
                     for (int bdx = -brushRadius; bdx <= brushRadius; ++bdx) {
                         if (bdx*bdx + bdy*bdy <= brushRadius*brushRadius) {
-                            int px = x + bdx, py = y + bdy;
-                            if (px >= 0 && px < canvasW && py >= 0 && py < canvasH) {
-                                int screenX = px * pixelSize;
-                                int screenY = py * pixelSize;
-                                for (int py2 = 0; py2 < pixelSize; ++py2) {
-                                    QRgb* destLine = reinterpret_cast<QRgb*>(previewImage.scanLine(screenY + py2));
-                                    for (int px2 = 0; px2 < pixelSize; ++px2) {
-                                        destLine[screenX + px2] = color;
-                                    }
-                                }
+                            int px = x + bdx;
+                            if (px >= 0 && px < canvasW) {
+                                imageData[py * canvasW + px] = color;
                             }
                         }
                     }
@@ -438,35 +400,28 @@ void QtCanvasWidget::drawPreview(const QPoint& startCanvas, const QPoint& curren
             break;
         }
     }
-    
-    // Конвертируем в QPixmap для отображения
-    previewCache = QPixmap::fromImage(previewImage);
 }
 
 void QtCanvasWidget::clearPreview() {
-    if (!previewCache.isNull()) {
-        previewCache.fill(Qt::transparent);
+    if (!previewImage.isNull()) {
+        previewImage.fill(qRgba(0, 0, 0, 0));
     }
     hasPreview = false;
 }
 
 void QtCanvasWidget::eraseTextAtCanvasPos(int canvasX, int canvasY) {
-    // Центр ластика в экранных координатах
     int centerX = canvasX * pixelSize + pixelSize / 2;
     int centerY = canvasY * pixelSize + pixelSize / 2;
     int radius = (brushSize * pixelSize) / 2;
     
-    // Прямоугольник ластика
     QRect eraserRect(centerX - radius, centerY - radius, radius * 2, radius * 2);
     
-    // Шрифт для измерения текста
     QFont font;
     font.setPointSize(12);
     QFontMetrics fm(font);
     
     bool changed = false;
     
-    // Удаляем текст, если ластик пересекает его рамку
     for (int i = textItems.size() - 1; i >= 0; --i) {
         QRect textRect = fm.boundingRect(textItems[i].text);
         textRect.translate(textItems[i].pos);
@@ -483,29 +438,54 @@ void QtCanvasWidget::eraseTextAtCanvasPos(int canvasX, int canvasY) {
 void QtCanvasWidget::updateCursor() {
     if (dynamic_cast<EraserTool*>(activeTool)) {
         int cursorSize = brushSize * pixelSize;
+        if (cursorSize < 1) cursorSize = 1;
+        
+        QPixmap pixmap(cursorSize, cursorSize);
+        pixmap.fill(Qt::white);
+        
+        QPainter p(&pixmap);
+        p.setPen(QPen(Qt::black, 1));
+        p.drawRect(0, 0, cursorSize - 1, cursorSize - 1);
+        p.end();
+        
+        int hotX = cursorSize / 2;
+        int hotY = cursorSize / 2;
+        setCursor(QCursor(pixmap, hotX, hotY));
+    } else if (dynamic_cast<BrushTool*>(activeTool)) {
+        int cursorSize = brushSize * pixelSize;
+        if (cursorSize < 1) cursorSize = 1;
         
         QPixmap pixmap(cursorSize, cursorSize);
         pixmap.fill(Qt::transparent);
         
         QPainter p(&pixmap);
-        p.setPen(Qt::black);
-        p.drawRect(0, 0, cursorSize - 1, cursorSize - 1);
+        p.setRenderHint(QPainter::Antialiasing);
+
+        QPen pen(activeToolColor, 1);
+        p.setPen(pen);
+        p.setBrush(Qt::NoBrush);
+        
+        qreal offset = (brushSize % 2 == 0) ? 0.5 : 0.0;
+        qreal centerX = cursorSize / 2.0;
+        qreal centerY = cursorSize / 2.0;
+        qreal radiusPx = (brushSize / 2.0) * pixelSize - 0.5;
+        
+        p.drawEllipse(QPointF(centerX, centerY), radiusPx, radiusPx);
         p.end();
         
-        int radius = brushSize / 2;
-        setCursor(QCursor(pixmap, radius * pixelSize, radius * pixelSize));
-    } else {
-        setCursor(Qt::ArrowCursor);
+        int hotX = cursorSize / 2;
+        int hotY = cursorSize / 2;
+        setCursor(QCursor(pixmap, hotX, hotY));
     }
 }
 
 void QtCanvasWidget::setCanvas(ICanvas& newCanvas) {
     canvas = &newCanvas;
     
-    canvasCache = QPixmap(); //Очистка кеша
+    canvasCache = QPixmap();
     cacheDirty = true;
     
-    textItems.clear(); //текста
+    textItems.clear();
     
     updateCanvasSize();
     update();
@@ -524,4 +504,29 @@ int QtCanvasWidget::getCanvasWidth() const {
 
 int QtCanvasWidget::getCanvasHeight() const {
     return canvas->getHeight();
+}
+
+QVector<QPoint> QtCanvasWidget::getBrushMask(int brushSize) {
+    QVector<QPoint> points;
+    double radius = brushSize / 2.0;
+    int half = brushSize / 2;
+    for (int dy = -half; dy <= half; ++dy) {
+        for (int dx = -half; dx <= half; ++dx) {
+            if (std::sqrt(dx*dx + dy*dy) <= radius) {
+                points.append(QPoint(dx, dy));
+            }
+        }
+    }
+    return points;
+}
+
+QVector<QPoint> QtCanvasWidget::getEraserMask(int brushSize) {
+    QVector<QPoint> points;
+    int half = brushSize / 2;
+    for (int dy = -half; dy <= half; ++dy) {
+        for (int dx = -half; dx <= half; ++dx) {
+            points.append(QPoint(dx, dy));
+        }
+    }
+    return points;
 }

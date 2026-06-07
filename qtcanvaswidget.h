@@ -25,6 +25,10 @@ public:
 
     void setCacheDirty() { cacheDirty = true; }
     void setCacheDirty(bool val) { cacheDirty = val; }
+    void updateCursor();
+
+    static QVector<QPoint> getBrushMask(int brushSize);
+    static QVector<QPoint> getEraserMask(int brushSize);
 
 protected:
     void paintEvent(QPaintEvent* event) override;
@@ -63,10 +67,9 @@ private:
     // Для фигур
     QPoint shapeStartCanvas;
     
-    // Для preview
-    QPixmap previewCache;
+    // Для preview    
+    QImage previewImage;
     bool hasPreview;
-    QImage previewImage; 
     
     void drawPreview(const QPoint& startCanvas, const QPoint& currentCanvas);
     void clearPreview();
@@ -74,5 +77,5 @@ private:
     QList<TextItem> textItems;
     void eraseTextAtCanvasPos(int canvasX, int canvasY);
 
-    void updateCursor();
+    
 };

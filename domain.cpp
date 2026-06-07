@@ -33,7 +33,7 @@ int Canvas::getHeight() const { return h; }
 
 void Canvas::startBatch() {
     isBatching = true;
-    undoHistory.push(UndoStep(-1, -1, 0, true));  // <-- 0 вместо QColor(0, 0, 0, 0)
+    undoHistory.push(UndoStep(-1, -1, 0, true));
 }
 
 void Canvas::endBatch() {
@@ -49,7 +49,7 @@ void Canvas::undo() {
         undoHistory.pop();
         if (step.isBatchMarker) break;
         if (step.x >= 0 && step.x < w && step.y >= 0 && step.y < h) {
-            data[step.y * w + step.x] = Pixel(step.previousColor);  // <-- QRgb -> Pixel
+            data[step.y * w + step.x] = Pixel(step.previousColor);
         }
     }
     isUndoing = false;
@@ -64,11 +64,15 @@ void Canvas::clear() {
 // === BrushTool ===
 BrushTool::BrushTool(const QColor& c, int s) : color(c), size(s) {}
 
+
 void BrushTool::use(ICanvas& canvas, int x, int y) {
-    int radius = size / 2;
-    for (int dy = -radius; dy <= radius; ++dy) {
-        for (int dx = -radius; dx <= radius; ++dx) {
-            if (dx*dx + dy*dy <= radius*radius) {
+    double radius = size / 2.0;
+    int half = size / 2;
+    
+    for (int dy = -half; dy <= half; ++dy) {
+        for (int dx = -half; dx <= half; ++dx) {
+            double dist = sqrt(dx*dx + dy*dy);
+            if (dist <= radius) {
                 canvas.setPixel(x + dx, y + dy, Pixel(color.rgba()));
             }
         }
@@ -84,13 +88,10 @@ void BrushTool::setSize(int s) { size = s; }
 EraserTool::EraserTool(int s) : size(s) {}
 
 void EraserTool::use(ICanvas& canvas, int x, int y) {
-    int radius = size / 2;
-    for (int dy = -radius; dy <= radius; ++dy) {
-        for (int dx = -radius; dx <= radius; ++dx) {
-            // Круглый ластик
-            if (dx*dx + dy*dy <= radius*radius) {
-                canvas.setPixel(x + dx, y + dy, Pixel());
-            }
+    int half = size / 2;
+    for (int dy = -half; dy <= half; ++dy) {
+        for (int dx = -half; dx <= half; ++dx) {
+            canvas.setPixel(x + dx, y + dy, Pixel());
         }
     }
 }
@@ -305,12 +306,17 @@ void BucketTool::floodFill(Canvas& canvas, int startX, int startY, QRgb fillColo
 
     if (startX < 0 || startX >= width || startY < 0 || startY >= height) return;
     
+    // Прямой доступ к памяти
     Pixel* data = canvas.getData();
     QRgb targetColor = data[startY * width + startX].color;
     if (targetColor == fillColor) return;
 
+    // Отключаем undo на время заливки
+    bool wasUndoing = canvas.getIsUndoing();
+    canvas.setIsUndoing(true);
+    
     std::vector<std::pair<int, int>> stack;
-    stack.reserve(width * height / 10);
+    stack.reserve(10000);
     stack.push_back({startX, startY});
     
     while (!stack.empty()) {
@@ -326,10 +332,10 @@ void BucketTool::floodFill(Canvas& canvas, int startX, int startY, QRgb fillColo
         while (x2 < width - 1 && data[y * width + (x2 + 1)].color == targetColor) {
             x2++;
         }       
-        
-        // Используем setPixel для записи в undo!
-        for (int i = 0; i <= x2 - x1; ++i) {
-            canvas.setPixel(x1 + i, y, Pixel(fillColor));
+
+        // ПРЯМАЯ ЗАПИСЬ в память
+        for (int i = x1; i <= x2; ++i) {
+            data[y * width + i].color = fillColor;
         }
                
         if (y > 0) {
@@ -350,6 +356,8 @@ void BucketTool::floodFill(Canvas& canvas, int startX, int startY, QRgb fillColo
             }
         }
     }
+    
+    canvas.setIsUndoing(wasUndoing);
 }
 
 // === BucketFactory ===
