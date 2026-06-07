@@ -13,7 +13,7 @@ Canvas::Canvas(int width, int height)
 void Canvas::setPixel(int x, int y, Pixel p) {
     if (x >= 0 && x < w && y >= 0 && y < h) {
         if (!isUndoing) {
-            if (undoHistory.size() > 100000) { //Ограничение истории
+            if (undoHistory.size() > 10000000) { //Ограничение истории
                 std::stack<UndoStep> temp;
                 std::swap(undoHistory, temp);
             }

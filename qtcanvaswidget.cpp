@@ -48,6 +48,7 @@ void QtCanvasWidget::setActiveColor(const QColor& color) {
     activeToolColor = color;
     if (activeTool) activeTool->setColor(color);
     if (currentFactory) currentFactory->setColor(color);
+    updateCursor();
 }
 
 void QtCanvasWidget::setBrushSize(int size) {
@@ -262,10 +263,16 @@ void QtCanvasWidget::mouseReleaseEvent(QMouseEvent* event) {
 }
 
 void QtCanvasWidget::clearCanvas() {
-    canvas->clear();
-    canvasCache.fill(Qt::white);
-    cacheDirty = false;
+    if (!canvas) return;
+    int width = canvas->getWidth();
+    int height = canvas->getHeight();
+    delete canvas;
+    canvas = new Canvas(width, height);
+    canvasCache = QPixmap();
+    cacheDirty = true;
     textItems.clear();
+    
+    updateCanvasSize();
     update();
 }
 
@@ -476,6 +483,8 @@ void QtCanvasWidget::updateCursor() {
         int hotX = cursorSize / 2;
         int hotY = cursorSize / 2;
         setCursor(QCursor(pixmap, hotX, hotY));
+    } else {
+        setCursor(Qt::ArrowCursor);
     }
 }
 
