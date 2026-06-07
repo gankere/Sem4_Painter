@@ -65,4 +65,6 @@ private:
     
     QList<TextItem> textItems;
     void eraseTextAtCanvasPos(int canvasX, int canvasY);
+
+    void updateCursor();
 };

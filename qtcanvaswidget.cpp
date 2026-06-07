@@ -39,6 +39,7 @@ void QtCanvasWidget::updateFactory(IToolFactory* factory) {
     delete currentFactory;
     currentFactory = factory;
     activeTool = currentFactory->create();
+    updateCursor();
 }
 
 void QtCanvasWidget::setActiveColor(const QColor& color) {
@@ -51,6 +52,7 @@ void QtCanvasWidget::setBrushSize(int size) {
     brushSize = size;
     if (activeTool) activeTool->setSize(size);
     if (currentFactory) currentFactory->setSize(size);
+    updateCursor();
 }
 
 void QtCanvasWidget::setPixelSize(int size) {
@@ -59,6 +61,7 @@ void QtCanvasWidget::setPixelSize(int size) {
     pixelSize = size;
     updateCanvasSize();
     cacheDirty = true;
+    updateCursor();
     update();
 }
 
@@ -89,13 +92,25 @@ void QtCanvasWidget::drawDirectlyOnCache(int canvasX, int canvasY, const QColor&
     QPainter p(&canvasCache);
     p.setPen(Qt::NoPen);
     
-    int radius = bSize / 2;
-    for (int dy = -radius; dy <= radius; ++dy) {
-        for (int dx = -radius; dx <= radius; ++dx) {
-            if (dx*dx + dy*dy <= radius*radius) {
-                int screenX = (canvasX + dx) * pixelSize;
-                int screenY = (canvasY + dy) * pixelSize;
-                p.fillRect(screenX, screenY, pixelSize, pixelSize, color);
+    bool isEraser = dynamic_cast<EraserTool*>(activeTool) != nullptr;
+
+    if (isEraser) {
+        // Для ластика квадрат
+        int radius = bSize / 2;
+        int x = (canvasX - radius) * pixelSize;
+        int y = (canvasY - radius) * pixelSize;
+        int size = bSize * pixelSize;
+        p.fillRect(x, y, size, size, color);
+    } else {
+        // Для кисти круг
+        int radius = bSize / 2;
+        for (int dy = -radius; dy <= radius; ++dy) {
+            for (int dx = -radius; dx <= radius; ++dx) {
+                if (dx*dx + dy*dy <= radius*radius) {
+                    int screenX = (canvasX + dx) * pixelSize;
+                    int screenY = (canvasY + dy) * pixelSize;
+                    p.fillRect(screenX, screenY, pixelSize, pixelSize, color);
+                }
             }
         }
     }
@@ -365,4 +380,23 @@ void QtCanvasWidget::eraseTextAtCanvasPos(int canvasX, int canvasY) {
     }
     
     if (changed) update();
+}
+
+void QtCanvasWidget::updateCursor() {
+    if (dynamic_cast<EraserTool*>(activeTool)) {
+        int cursorSize = brushSize * pixelSize;
+        
+        QPixmap pixmap(cursorSize, cursorSize);
+        pixmap.fill(Qt::transparent);
+        
+        QPainter p(&pixmap);
+        p.setPen(Qt::black);
+        p.drawRect(0, 0, cursorSize - 1, cursorSize - 1);
+        p.end();
+        
+        int radius = brushSize / 2;
+        setCursor(QCursor(pixmap, radius * pixelSize, radius * pixelSize));
+    } else {
+        setCursor(Qt::ArrowCursor);
+    }
 }
