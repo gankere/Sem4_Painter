@@ -16,6 +16,7 @@ qt_add_executable(PainterQt
     mainwindow.h mainwindow.cpp
     qtcanvaswidget.h qtcanvaswidget.cpp
     domain.h domain.cpp
+    canvasdialog.h canvasdialog.cpp
 )
 
 target_link_libraries(PainterQt PRIVATE Qt6::Widgets)

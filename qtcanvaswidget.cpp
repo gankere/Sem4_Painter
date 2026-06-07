@@ -5,9 +5,9 @@
 #include <QLineEdit>
 #include <algorithm>
 
-QtCanvasWidget::QtCanvasWidget(ICanvas& canvas, QWidget* parent)
+QtCanvasWidget::QtCanvasWidget(ICanvas* canvas, QWidget* parent)
     : QWidget(parent), 
-      canvas(canvas), 
+      canvas(canvas),
       currentFactory(new BrushFactory()), 
       activeTool(new BrushTool()), 
       isDrawing(false), 
@@ -25,7 +25,9 @@ QtCanvasWidget::QtCanvasWidget(ICanvas& canvas, QWidget* parent)
     setFocus();
     setMouseTracking(true);
 
-    updateCanvasSize();
+    if (canvas) {
+        updateCanvasSize();
+    }
 }
 
 QtCanvasWidget::~QtCanvasWidget() {
@@ -66,15 +68,17 @@ void QtCanvasWidget::setPixelSize(int size) {
 }
 
 void QtCanvasWidget::updateCache() {
-    canvasCache = QPixmap(canvas.getWidth() * pixelSize, canvas.getHeight() * pixelSize);
+    if (!canvas) return;
+
+    canvasCache = QPixmap(canvas->getWidth() * pixelSize, canvas->getHeight() * pixelSize);
     canvasCache.fill(Qt::white);
     
     QPainter p(&canvasCache);
     p.setPen(Qt::NoPen);
     
-    for (int y = 0; y < canvas.getHeight(); ++y) {
-        for (int x = 0; x < canvas.getWidth(); ++x) {
-            Pixel px = canvas.getPixel(x, y);
+    for (int y = 0; y < canvas->getHeight(); ++y) {
+        for (int x = 0; x < canvas->getWidth(); ++x) {
+            Pixel px = canvas->getPixel(x, y);
             if (!px.isEmpty()) {
                 p.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize, px.color);
             }
@@ -137,17 +141,17 @@ void QtCanvasWidget::paintEvent(QPaintEvent*) {
 }
 
 void QtCanvasWidget::drawAtPosition(const QPoint& pos) {
-    int x = std::clamp(pos.x() / pixelSize, 0, canvas.getWidth() - 1);
-    int y = std::clamp(pos.y() / pixelSize, 0, canvas.getHeight() - 1);
-    activeTool->use(canvas, x, y);
+    int x = std::clamp(pos.x() / pixelSize, 0, canvas->getWidth() - 1);
+    int y = std::clamp(pos.y() / pixelSize, 0, canvas->getHeight() - 1);
+    activeTool->use(*canvas, x, y);
     cacheDirty = true;
 }
 
 void QtCanvasWidget::drawLine(const QPoint& from, const QPoint& to) {
-    int x1 = std::clamp(from.x() / pixelSize, 0, canvas.getWidth() - 1);
-    int y1 = std::clamp(from.y() / pixelSize, 0, canvas.getHeight() - 1);
-    int x2 = std::clamp(to.x() / pixelSize, 0, canvas.getWidth() - 1);
-    int y2 = std::clamp(to.y() / pixelSize, 0, canvas.getHeight() - 1);
+    int x1 = std::clamp(from.x() / pixelSize, 0, canvas->getWidth() - 1);
+    int y1 = std::clamp(from.y() / pixelSize, 0, canvas->getHeight() - 1);
+    int x2 = std::clamp(to.x() / pixelSize, 0, canvas->getWidth() - 1);
+    int y2 = std::clamp(to.y() / pixelSize, 0, canvas->getHeight() - 1);
 
     int dx = std::abs(x2 - x1), dy = std::abs(y2 - y1);
     int sx = (x1 < x2) ? 1 : -1, sy = (y1 < y2) ? 1 : -1;
@@ -158,7 +162,7 @@ void QtCanvasWidget::drawLine(const QPoint& from, const QPoint& to) {
     if (!eraser) drawColor = activeToolColor;
 
     while (true) {
-        activeTool->use(canvas, x1, y1);
+        activeTool->use(*canvas, x1, y1);
 
         if (eraser) {
             eraseTextAtCanvasPos(x1, y1);
@@ -177,8 +181,8 @@ void QtCanvasWidget::drawLine(const QPoint& from, const QPoint& to) {
 void QtCanvasWidget::mousePressEvent(QMouseEvent* event) {
     if (event->button() != Qt::LeftButton) return;
     
-    int x = std::clamp(event->pos().x() / pixelSize, 0, canvas.getWidth() - 1);
-    int y = std::clamp(event->pos().y() / pixelSize, 0, canvas.getHeight() - 1);
+    int x = std::clamp(event->pos().x() / pixelSize, 0, canvas->getWidth() - 1);
+    int y = std::clamp(event->pos().y() / pixelSize, 0, canvas->getHeight() - 1);
 
     TextTool* textTool = dynamic_cast<TextTool*>(activeTool);
     if (textTool) {
@@ -188,9 +192,9 @@ void QtCanvasWidget::mousePressEvent(QMouseEvent* event) {
 
     BucketTool* bucketTool = dynamic_cast<BucketTool*>(activeTool);
     if (bucketTool) {
-        canvas.startBatch();
-        bucketTool->use(canvas, x, y);
-        canvas.endBatch();
+        canvas->startBatch();
+        bucketTool->use(*canvas, x, y);
+        canvas->endBatch();
         cacheDirty = true;
         update();
         return;
@@ -205,8 +209,8 @@ void QtCanvasWidget::mousePressEvent(QMouseEvent* event) {
     } else {
         isDrawing = true;
         lastPos = event->pos();
-        canvas.startBatch();
-        activeTool->use(canvas, x, y);
+        canvas->startBatch();
+        activeTool->use(*canvas, x, y);
         
         QColor drawColor = Qt::white;
         EraserTool* eraser = dynamic_cast<EraserTool*>(activeTool);
@@ -230,8 +234,8 @@ void QtCanvasWidget::mouseMoveEvent(QMouseEvent* event) {
     
     ShapeTool* shapeTool = dynamic_cast<ShapeTool*>(activeTool);
     if (shapeTool) {
-        int x = std::clamp(event->pos().x() / pixelSize, 0, canvas.getWidth() - 1);
-        int y = std::clamp(event->pos().y() / pixelSize, 0, canvas.getHeight() - 1);
+        int x = std::clamp(event->pos().x() / pixelSize, 0, canvas->getWidth() - 1);
+        int y = std::clamp(event->pos().y() / pixelSize, 0, canvas->getHeight() - 1);
         
         drawPreview(shapeStartCanvas, QPoint(x, y));
         hasPreview = true;
@@ -254,24 +258,24 @@ void QtCanvasWidget::mouseReleaseEvent(QMouseEvent* event) {
     if (shapeTool) {
         clearPreview();
         
-        int x = std::clamp(event->pos().x() / pixelSize, 0, canvas.getWidth() - 1);
-        int y = std::clamp(event->pos().y() / pixelSize, 0, canvas.getHeight() - 1);
+        int x = std::clamp(event->pos().x() / pixelSize, 0, canvas->getWidth() - 1);
+        int y = std::clamp(event->pos().y() / pixelSize, 0, canvas->getHeight() - 1);
         
-        canvas.startBatch();
+        canvas->startBatch();
         shapeTool->startShape(shapeStartCanvas.x(), shapeStartCanvas.y());
-        shapeTool->drawShape(canvas, x, y);
+        shapeTool->drawShape(*canvas, x, y);
         shapeTool->endShape();
-        canvas.endBatch();
+        canvas->endBatch();
         
         cacheDirty = true;
         update();
     } else {
-        canvas.endBatch();
+        canvas->endBatch();
     }
 }
 
 void QtCanvasWidget::clearCanvas() {
-    canvas.clear();
+    canvas->clear();
     canvasCache.fill(Qt::white);
     cacheDirty = false;
     textItems.clear();
@@ -280,7 +284,7 @@ void QtCanvasWidget::clearCanvas() {
 
 void QtCanvasWidget::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Z && (event->modifiers() & Qt::ControlModifier)) {
-        canvas.undo();
+        canvas->undo();
         cacheDirty = true;
         update();
         return;
@@ -400,3 +404,31 @@ void QtCanvasWidget::updateCursor() {
         setCursor(Qt::ArrowCursor);
     }
 }
+
+void QtCanvasWidget::setCanvas(ICanvas& newCanvas) {
+    canvas = &newCanvas;
+    
+    canvasCache = QPixmap(); //Очистка кеша
+    cacheDirty = true;
+    
+    textItems.clear(); //текста
+    
+    updateCanvasSize();
+    update();
+}
+
+void QtCanvasWidget::updateCanvasSize() {
+    int newWidth = canvas->getWidth() * pixelSize;
+    int newHeight = canvas->getHeight() * pixelSize;
+    setFixedSize(newWidth, newHeight);
+    cacheDirty = true;
+}
+
+int QtCanvasWidget::getCanvasWidth() const {
+    return canvas->getWidth();
+}
+
+int QtCanvasWidget::getCanvasHeight() const {
+    return canvas->getHeight();
+}
+

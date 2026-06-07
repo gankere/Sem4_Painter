@@ -28,5 +28,11 @@
   "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -DWINVER=0x0A00 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN32_WINNT=0x0A00 -D_WIN64 -IC:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/PainterQt_autogen/include -isystem C:/msys64/mingw64/include/qt6/QtCore -isystem C:/msys64/mingw64/include/qt6 -isystem C:/msys64/mingw64/share/qt6/mkspecs/win32-g++ -isystem C:/msys64/mingw64/include/qt6/QtWidgets -isystem C:/msys64/mingw64/include/qt6/QtGui -g -std=gnu++17 -o CMakeFiles\\PainterQt.dir\\domain.cpp.obj -c C:\\Users\\gankere\\TPU_Workspace\\QT_Workspace\\ProJpaint\\domain.cpp",
   "file": "C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/domain.cpp",
   "output": "C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/PainterQt.dir/domain.cpp.obj"
+},
+{
+  "directory": "C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build",
+  "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -DWINVER=0x0A00 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN32_WINNT=0x0A00 -D_WIN64 -IC:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/PainterQt_autogen/include -isystem C:/msys64/mingw64/include/qt6/QtCore -isystem C:/msys64/mingw64/include/qt6 -isystem C:/msys64/mingw64/share/qt6/mkspecs/win32-g++ -isystem C:/msys64/mingw64/include/qt6/QtWidgets -isystem C:/msys64/mingw64/include/qt6/QtGui -g -std=gnu++17 -o CMakeFiles\\PainterQt.dir\\canvasdialog.cpp.obj -c C:\\Users\\gankere\\TPU_Workspace\\QT_Workspace\\ProJpaint\\canvasdialog.cpp",
+  "file": "C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/canvasdialog.cpp",
+  "output": "C:/Users/gankere/TPU_Workspace/QT_Workspace/ProJpaint/build/CMakeFiles/PainterQt.dir/canvasdialog.cpp.obj"
 }
 ]

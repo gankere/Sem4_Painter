@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "domain.h" 
+#include "canvasdialog.h" 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFrame>
@@ -10,8 +11,8 @@
 #include <QLabel>
 #include <QScrollArea>
 
-MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
-    : QMainWindow(parent), canvas(canvas), activeColor(Qt::black) {
+MainWindow::MainWindow(QWidget* parent)
+    : QMainWindow(parent), canvas(nullptr), activeColor(Qt::black) {
     
     QWidget* centralWidget = new QWidget(this);
     QHBoxLayout* mainLayout = new QHBoxLayout(centralWidget);
@@ -132,6 +133,12 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
 
     // === ФАЙЛОВЫЕ ОПЕРАЦИИ ===
     toolbarLayout->addStretch();
+
+    auto* newCanvasBtn = new QPushButton("📄");
+    newCanvasBtn->setToolTip("Новый холст");
+    newCanvasBtn->setFixedSize(BTN_SIZE, BTN_SIZE);
+
+    toolbarLayout->addStretch();
     auto* saveBtn = new QPushButton("💾");
     saveBtn->setToolTip("Сохранить");
     saveBtn->setFixedSize(BTN_SIZE, BTN_SIZE);
@@ -144,11 +151,13 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
     clearBtn->setToolTip("Очистить");
     clearBtn->setFixedSize(BTN_SIZE, BTN_SIZE);
     
+    toolbarLayout->addWidget(newCanvasBtn);
     toolbarLayout->addWidget(saveBtn);
     toolbarLayout->addWidget(loadBtn);
     toolbarLayout->addWidget(clearBtn);
 
     // Подключения
+    connect(newCanvasBtn, &QPushButton::clicked, this, &MainWindow::onNewCanvasClicked);
     connect(toolGroup, &QButtonGroup::buttonClicked, this, &MainWindow::onToolButtonClicked);
     connect(shapeGroup, &QButtonGroup::buttonClicked, this, &MainWindow::onShapeButtonClicked);
     connect(saveBtn, &QPushButton::clicked, this, &MainWindow::onSaveClicked);
@@ -163,18 +172,20 @@ MainWindow::MainWindow(ICanvas& canvas, QWidget* parent)
     QHBoxLayout* containerLayout = new QHBoxLayout(canvasContainer);
     containerLayout->setContentsMargins(0, 0, 0, 0);
     
-    QScrollArea* scrollArea = new QScrollArea; //скроллеры
+    scrollArea = new QScrollArea; //скроллеры
     scrollArea->setStyleSheet("background-color: #bbccde; border: none;"); 
     scrollArea->setWidgetResizable(false);
-    
-    canvasWidget = new QtCanvasWidget(canvas, scrollArea);
+
+    canvasWidget = new QtCanvasWidget(nullptr, scrollArea);
+    scrollArea->hide();
+
     canvasWidget->setMinimumSize(800, 600);
     canvasWidget->setFocusPolicy(Qt::StrongFocus);
     canvasWidget->setFocus();
-    
+
     scrollArea->setWidget(canvasWidget);
     containerLayout->addWidget(scrollArea, 1);
-    
+        
     leftLayout->addWidget(canvasContainer, 1);
     
     mainLayout->addWidget(leftPart, 1);
@@ -396,17 +407,14 @@ void MainWindow::adjustBrightness(int value) {
     onColorChanged(newColor);
 }
 
-void QtCanvasWidget::updateCanvasSize() {
-    int newWidth = canvas.getWidth() * pixelSize;
-    int newHeight = canvas.getHeight() * pixelSize;
-    setFixedSize(newWidth, newHeight);
-    cacheDirty = true;
-}
-
 void MainWindow::updateCanvasSizeLabel() {
-    int width = canvas.getWidth();
-    int height = canvas.getHeight();
-    canvasSizeLabel->setText(QString("%1 x %2 px").arg(width).arg(height));
+    if (canvas) {
+        int width = canvas->getWidth();
+        int height = canvas->getHeight();
+        canvasSizeLabel->setText(QString("%1 x %2 px").arg(width).arg(height));
+    } else {
+        canvasSizeLabel->setText("0 x 0 px");
+    }
 }
 
 void MainWindow::onSaveClicked() {
@@ -418,8 +426,7 @@ void MainWindow::onSaveClicked() {
     );
     
     if (path.isEmpty()) return;
-    
-    // Определяем формат по расширению
+
     QString format;
     if (path.endsWith(".png", Qt::CaseInsensitive)) {
         format = "PNG";
@@ -434,11 +441,11 @@ void MainWindow::onSaveClicked() {
     }
     
     // Создаём изображение из canvas
-    QImage image(canvas.getWidth(), canvas.getHeight(), QImage::Format_RGB32);
+    QImage image(canvas->getWidth(), canvas->getHeight(), QImage::Format_RGB32);
     
-    for (int y = 0; y < canvas.getHeight(); ++y) {
-        for (int x = 0; x < canvas.getWidth(); ++x) {
-            Pixel px = canvas.getPixel(x, y);
+    for (int y = 0; y < canvas->getHeight(); ++y) {
+        for (int x = 0; x < canvas->getWidth(); ++x) {
+            Pixel px = canvas->getPixel(x, y);
             if (px.isEmpty()) {
                 image.setPixelColor(x, y, Qt::white);
             } else {
@@ -471,22 +478,46 @@ void MainWindow::onLoadClicked() {
         return;
     }
     
-    canvas.clear();
+    canvas->clear();
     
-    // Загружаем пиксели
-    int width = std::min(image.width(), canvas.getWidth());
-    int height = std::min(image.height(), canvas.getHeight());
+    int width = std::min(image.width(), canvas->getWidth());
+    int height = std::min(image.height(), canvas->getHeight());
     
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
             QColor color = image.pixelColor(x, y);
-            canvas.setPixel(x, y, Pixel(color));
+            canvas->setPixel(x, y, Pixel(color));
         }
     }
     
-    // Обновляем отображение
-    canvasWidget->updateCanvasSize();
+    canvasWidget->updateCanvasSize(); //обновление отображения
     canvasWidget->update();
     
     QMessageBox::information(this, "Успех", "Изображение загружено!");
+}
+
+void MainWindow::createCanvas(int width, int height) {
+    canvas = new Canvas(width, height);
+    canvasWidget->setCanvas(*canvas);
+    canvasWidget->show();
+    scrollArea->show();
+    updateCanvasSizeLabel();
+}
+
+void MainWindow::onNewCanvasClicked() {
+    CanvasDialog sizeDialog(this);
+    if (sizeDialog.exec() != QDialog::Accepted) {
+        return;
+    }
+    
+    int width = sizeDialog.getWidth();
+    int height = sizeDialog.getHeight();
+    
+    delete canvas;
+    
+    canvas = new Canvas(width, height);
+    
+    canvasWidget->setCanvas(*canvas); //обновление виджета
+    
+    updateCanvasSizeLabel();
 }

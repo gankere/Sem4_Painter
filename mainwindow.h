@@ -12,7 +12,8 @@
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
-    MainWindow(ICanvas& canvas, QWidget* parent = nullptr);
+    explicit MainWindow(QWidget* parent = nullptr);
+    void createCanvas(int width, int height);    
 
 private slots:
     void onToolButtonClicked(QAbstractButton* btn);
@@ -26,10 +27,12 @@ private slots:
     void onLoadClicked();
     void onClearClicked();
     void adjustBrightness(int value);
+    void onNewCanvasClicked();
 
 private:
-    ICanvas& canvas;
+    ICanvas* canvas;
     QtCanvasWidget* canvasWidget;
+    QScrollArea* scrollArea;
     
     QButtonGroup* toolGroup;
     QButtonGroup* shapeGroup;

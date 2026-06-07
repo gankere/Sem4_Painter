@@ -1,16 +1,19 @@
 #include <QApplication>
-#include "domain.h"
 #include "mainwindow.h"
+#include "canvasdialog.h"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
-    Canvas canvas(570, 300); // размер холста
+    MainWindow mainWindow;
+    mainWindow.show();
 
-    MainWindow window(canvas);
-    window.setWindowTitle("Pixel Editor Qt");
-    window.resize(1100, 750); // размер окна
-    window.show();
+    CanvasDialog sizeDialog(&mainWindow); //диалог поверх главного окна
+    if (sizeDialog.exec() != QDialog::Accepted) {
+        return 0;
+    }
+
+    mainWindow.createCanvas(sizeDialog.getWidth(), sizeDialog.getHeight());
 
     return app.exec();
 }

@@ -8,8 +8,10 @@
 class QtCanvasWidget : public QWidget {
     Q_OBJECT
 public:
-    explicit QtCanvasWidget(ICanvas& canvas, QWidget* parent = nullptr);
+    explicit QtCanvasWidget(ICanvas* canvas = nullptr, QWidget* parent = nullptr);
     ~QtCanvasWidget();
+    int getCanvasWidth() const;
+    int getCanvasHeight() const;
 
     void updateFactory(IToolFactory* factory);
     void clearCanvas();
@@ -19,6 +21,7 @@ public:
     void setPixelSize(int size);
     void updateCanvasSize();
     void showTextDialog(const QPoint& pos);
+    void setCanvas(ICanvas& newCanvas);
 
 protected:
     void paintEvent(QPaintEvent* event) override;
@@ -37,7 +40,7 @@ private:
         QColor color;
     };
     
-    ICanvas& canvas;
+    ICanvas* canvas;
     IToolFactory* currentFactory;
     ITool* activeTool;
     bool isDrawing;
