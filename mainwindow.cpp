@@ -297,6 +297,7 @@ MainWindow::MainWindow(QWidget* parent)
     connect(undoShortcut, &QShortcut::activated, this, [this]() {
         if (canvas) {
             canvas->undo();
+            canvasWidget->undoText();
             canvasWidget->setCacheDirty();
             canvasWidget->update();
         }

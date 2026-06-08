@@ -8,6 +8,10 @@
 #include <QString>
 #include <QImage>
 
+// ============================================
+// СТРУКТУРЫ ДАННЫХ
+// ============================================
+
 struct UndoStep {
     int x, y;
     QRgb previousColor;
@@ -26,6 +30,10 @@ struct Pixel {
     
     bool isEmpty() const { return qAlpha(color) == 0; }
 };
+
+// ============================================
+// CANVAS
+// ============================================
 
 class ICanvas {
 public:
@@ -63,7 +71,6 @@ public:
     void undo() override;
     void startBatch() override;
     void endBatch() override;
-    
     void loadFromImage(const QImage& image, int x, int y, int width, int height) override;
     int getUndoHistorySize() const override { return undoHistory.size(); }
 
@@ -73,13 +80,15 @@ public:
     void setIsUndoing(bool val) { isUndoing = val; }
 };
 
+// ============================================
 // ИНСТРУМЕНТЫ
+// ============================================
+
 class ITool {
 public:
     virtual ~ITool() = default;
     virtual void use(ICanvas& canvas, int x, int y) = 0;
     virtual std::string getToolName() const = 0;
-    
     virtual void setColor(const QColor& color) = 0;
     virtual void setSize(int size) = 0;
 };
@@ -113,6 +122,7 @@ class ShapeTool : public ITool {
 public:
     enum Type { Line, Rect, Ellipse };
     Type getShapeType() const { return shapeType; } 
+    
 private:
     QColor color;
     Type shapeType;
@@ -136,15 +146,45 @@ public:
     void drawEllipse(ICanvas& canvas, int x1, int y1, int x2, int y2);
 };
 
+class BucketTool : public ITool {
+private:
+    QRgb color;
+    
+public:
+    BucketTool(const QColor& c = Qt::black);
+    void use(ICanvas& canvas, int x, int y) override;
+    std::string getToolName() const override;
+    void setColor(const QColor& c) override;
+    void setSize(int s) override;
+    
+private:
+    void floodFill(Canvas& canvas, int startX, int startY, QRgb fillColor);
+};
+
+class TextTool : public ITool {
+private:
+    QColor color;
+    int fontSize;
+    
+public:
+    TextTool(const QColor& c = Qt::black, int size = 12);
+    void use(ICanvas& canvas, int x, int y) override;
+    std::string getToolName() const override;
+    void setColor(const QColor& c) override;
+    void setSize(int s) override;
+    
+    void drawText(ICanvas& canvas, int x, int y, const QString& text);
+};
+
 // ============================================
-// Фабрики
+// ФАБРИКИ
 // ============================================
+
 class IToolFactory {
 public:
     virtual ~IToolFactory() = default;
     virtual ITool* create() = 0;
     virtual std::string getToolName() const = 0;
-    
     virtual void setColor(const QColor& color) = 0;
     virtual void setSize(int size) = 0;
 };
@@ -188,21 +228,6 @@ public:
     void setSize(int s) override;
 };
 
-class BucketTool : public ITool {
-private:
-    QRgb color;
-    
-public:
-    BucketTool(const QColor& c = Qt::black);
-    void use(ICanvas& canvas, int x, int y) override;
-    std::string getToolName() const override;
-    void setColor(const QColor& c) override;
-    void setSize(int s) override;
-    
-private:
-    void floodFill(Canvas& canvas, int startX, int startY, QRgb fillColor);
-};
-
 class BucketFactory : public IToolFactory {
 private:
     QColor color;
@@ -213,21 +238,6 @@ public:
     std::string getToolName() const override;
     void setColor(const QColor& c) override;
     void setSize(int s) override;
-};
-
-class TextTool : public ITool {
-private:
-    QColor color;
-    int fontSize;
-    
-public:
-    TextTool(const QColor& c = Qt::black, int size = 12);
-    void use(ICanvas& canvas, int x, int y) override;
-    std::string getToolName() const override;
-    void setColor(const QColor& c) override;
-    void setSize(int s) override;
-    
-    void drawText(ICanvas& canvas, int x, int y, const QString& text);
 };
 
 class TextFactory : public IToolFactory {

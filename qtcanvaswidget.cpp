@@ -5,6 +5,10 @@
 #include <QLineEdit>
 #include <algorithm>
 
+// ============================================
+// CONSTRUCTOR / DESTRUCTOR
+// ============================================
+
 QtCanvasWidget::QtCanvasWidget(ICanvas* canvas, QWidget* parent)
     : QWidget(parent), 
       canvas(canvas),
@@ -34,6 +38,34 @@ QtCanvasWidget::~QtCanvasWidget() {
     delete activeTool;
     delete currentFactory;
 }
+
+// ============================================
+// TEXT UNDO
+// ============================================
+
+void QtCanvasWidget::saveTextState() {
+    textUndoStack.append(textItems);
+    // Ограничим стек, чтобы не занимать много памяти
+    if (textUndoStack.size() > 1000) {
+        textUndoStack.removeFirst();
+    }
+}
+
+void QtCanvasWidget::restoreTextState() {
+    if (!textUndoStack.isEmpty()) {
+        textItems = textUndoStack.last();
+        textUndoStack.removeLast();
+        update();
+    }
+}
+
+void QtCanvasWidget::undoText() {
+    restoreTextState();
+}
+
+// ============================================
+// TOOLS
+// ============================================
 
 // Смена инструмента
 void QtCanvasWidget::updateFactory(IToolFactory* factory) { 
@@ -67,6 +99,44 @@ void QtCanvasWidget::setPixelSize(int size) {
     updateCursor();
     update();
 }
+
+// ============================================
+// CANVAS OPERATIONS
+// ============================================
+
+void QtCanvasWidget::setCanvas(ICanvas& newCanvas) {
+    canvas = &newCanvas;
+    
+    canvasCache = QPixmap();
+    cacheDirty = true;
+    
+    textItems.clear();
+    textUndoStack.clear();  // Очищаем историю текста
+    
+    updateCanvasSize();
+    update();
+}
+
+void QtCanvasWidget::updateCanvasSize() {
+    int newWidth = canvas->getWidth() * pixelSize;
+    int newHeight = canvas->getHeight() * pixelSize;
+    setFixedSize(newWidth, newHeight);
+    cacheDirty = true;
+}
+
+void QtCanvasWidget::clearCanvas() {
+    saveTextState();  // Сохраняем перед очисткой
+    canvasCache = QPixmap();
+    cacheDirty = true;
+    textItems.clear();
+    
+    updateCanvasSize();
+    update();
+}
+
+// ============================================
+// CACHE
+// ============================================
 
 void QtCanvasWidget::updateCache() {
     if (!canvas) return;
@@ -108,6 +178,10 @@ void QtCanvasWidget::drawDirectlyOnCache(int canvasX, int canvasY, QRgb color, i
     p.end();
 }
 
+// ============================================
+// PAINT EVENT
+// ============================================
+
 void QtCanvasWidget::paintEvent(QPaintEvent*) {
     if (cacheDirty) updateCache();
     
@@ -129,6 +203,10 @@ void QtCanvasWidget::paintEvent(QPaintEvent*) {
         painter.drawText(item.pos, item.text);
     }
 }
+
+// ============================================
+// DRAWING
+// ============================================
 
 void QtCanvasWidget::drawAtPosition(const QPoint& pos) {
     int x = std::clamp(pos.x() / pixelSize, 0, canvas->getWidth() - 1);
@@ -167,6 +245,10 @@ void QtCanvasWidget::drawLine(const QPoint& from, const QPoint& to) {
     cacheDirty = false;
 }
 
+// ============================================
+// MOUSE EVENTS
+// ============================================
+
 void QtCanvasWidget::mousePressEvent(QMouseEvent* event) {
     if (event->button() != Qt::LeftButton) return;
     
@@ -181,6 +263,7 @@ void QtCanvasWidget::mousePressEvent(QMouseEvent* event) {
 
     BucketTool* bucketTool = dynamic_cast<BucketTool*>(activeTool);
     if (bucketTool) {
+        saveTextState();  // Сохраняем перед заливкой
         canvas->startBatch();
         bucketTool->use(*canvas, x, y);
         canvas->endBatch();
@@ -198,6 +281,7 @@ void QtCanvasWidget::mousePressEvent(QMouseEvent* event) {
     } else {
         isDrawing = true;
         lastPos = event->pos();
+        saveTextState();  // Сохраняем перед рисованием
         canvas->startBatch();
         activeTool->use(*canvas, x, y);
         
@@ -262,24 +346,24 @@ void QtCanvasWidget::mouseReleaseEvent(QMouseEvent* event) {
     }
 }
 
-void QtCanvasWidget::clearCanvas() {
-    canvasCache = QPixmap();
-    cacheDirty = true;
-    textItems.clear();
-    
-    updateCanvasSize();
-    update();
-}
+// ============================================
+// KEY EVENTS
+// ============================================
 
 void QtCanvasWidget::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Z && (event->modifiers() & Qt::ControlModifier)) {
         canvas->undo();
+        restoreTextState();  // Восстанавливаем текст
         cacheDirty = true;
         update();
         return;
     }
     QWidget::keyPressEvent(event);
 }
+
+// ============================================
+// TEXT
+// ============================================
 
 void QtCanvasWidget::showTextDialog(const QPoint& pos) {
     bool ok;
@@ -288,6 +372,8 @@ void QtCanvasWidget::showTextDialog(const QPoint& pos) {
                                          QLineEdit::Normal, "", &ok);
     
     if (ok && !text.isEmpty()) {
+        saveTextState();  // Сохраняем перед добавлением текста
+        
         TextItem item;
         item.text = text;
         item.pos = pos;
@@ -296,6 +382,36 @@ void QtCanvasWidget::showTextDialog(const QPoint& pos) {
         update();
     }
 }
+
+void QtCanvasWidget::eraseTextAtCanvasPos(int canvasX, int canvasY) {
+    int centerX = canvasX * pixelSize + pixelSize / 2;
+    int centerY = canvasY * pixelSize + pixelSize / 2;
+    int radius = (brushSize * pixelSize) / 2;
+    
+    QRect eraserRect(centerX - radius, centerY - radius, radius * 2, radius * 2);
+    
+    QFont font;
+    font.setPointSize(12);
+    QFontMetrics fm(font);
+    
+    bool changed = false;
+    
+    for (int i = textItems.size() - 1; i >= 0; --i) {
+        QRect textRect = fm.boundingRect(textItems[i].text);
+        textRect.translate(textItems[i].pos);
+        
+        if (eraserRect.intersects(textRect)) {
+            textItems.removeAt(i);
+            changed = true;
+        }
+    }
+    
+    if (changed) update();
+}
+
+// ============================================
+// PREVIEW
+// ============================================
 
 void QtCanvasWidget::drawPreview(const QPoint& startCanvas, const QPoint& currentCanvas) {
     int canvasW = canvas->getWidth();
@@ -409,31 +525,9 @@ void QtCanvasWidget::clearPreview() {
     hasPreview = false;
 }
 
-void QtCanvasWidget::eraseTextAtCanvasPos(int canvasX, int canvasY) {
-    int centerX = canvasX * pixelSize + pixelSize / 2;
-    int centerY = canvasY * pixelSize + pixelSize / 2;
-    int radius = (brushSize * pixelSize) / 2;
-    
-    QRect eraserRect(centerX - radius, centerY - radius, radius * 2, radius * 2);
-    
-    QFont font;
-    font.setPointSize(12);
-    QFontMetrics fm(font);
-    
-    bool changed = false;
-    
-    for (int i = textItems.size() - 1; i >= 0; --i) {
-        QRect textRect = fm.boundingRect(textItems[i].text);
-        textRect.translate(textItems[i].pos);
-        
-        if (eraserRect.intersects(textRect)) {
-            textItems.removeAt(i);
-            changed = true;
-        }
-    }
-    
-    if (changed) update();
-}
+// ============================================
+// CURSOR
+// ============================================
 
 void QtCanvasWidget::updateCursor() {
     if (dynamic_cast<EraserTool*>(activeTool)) {
@@ -481,32 +575,9 @@ void QtCanvasWidget::updateCursor() {
     }
 }
 
-void QtCanvasWidget::setCanvas(ICanvas& newCanvas) {
-    canvas = &newCanvas;
-    
-    canvasCache = QPixmap();
-    cacheDirty = true;
-    
-    textItems.clear();
-    
-    updateCanvasSize();
-    update();
-}
-
-void QtCanvasWidget::updateCanvasSize() {
-    int newWidth = canvas->getWidth() * pixelSize;
-    int newHeight = canvas->getHeight() * pixelSize;
-    setFixedSize(newWidth, newHeight);
-    cacheDirty = true;
-}
-
-int QtCanvasWidget::getCanvasWidth() const {
-    return canvas->getWidth();
-}
-
-int QtCanvasWidget::getCanvasHeight() const {
-    return canvas->getHeight();
-}
+// ============================================
+// MASK GENERATORS
+// ============================================
 
 QVector<QPoint> QtCanvasWidget::getBrushMask(int brushSize) {
     QVector<QPoint> points;
@@ -532,4 +603,16 @@ QVector<QPoint> QtCanvasWidget::getEraserMask(int brushSize) {
         }
     }
     return points;
+}
+
+// ============================================
+// GETTERS
+// ============================================
+
+int QtCanvasWidget::getCanvasWidth() const {
+    return canvas->getWidth();
+}
+
+int QtCanvasWidget::getCanvasHeight() const {
+    return canvas->getHeight();
 }

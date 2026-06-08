@@ -157,7 +157,6 @@ void BrushTool::use(ICanvas& canvas, int x, int y) {
 }
 
 std::string BrushTool::getToolName() const { return "Draw"; }
-
 void BrushTool::setColor(const QColor& c) { color = c; }
 void BrushTool::setSize(int s) { size = s; }
 
@@ -178,7 +177,6 @@ void EraserTool::use(ICanvas& canvas, int x, int y) {
 }
 
 std::string EraserTool::getToolName() const { return "Erase"; }
-
 void EraserTool::setColor(const QColor&) {}
 void EraserTool::setSize(int s) { size = s; }
 
@@ -308,7 +306,6 @@ ITool* BrushFactory::create() {
 }
 
 std::string BrushFactory::getToolName() const { return "Draw"; }
-
 void BrushFactory::setColor(const QColor& c) { color = c; }
 void BrushFactory::setSize(int s) { size = s; }
 
@@ -319,7 +316,6 @@ ITool* EraserFactory::create() {
 }
 
 std::string EraserFactory::getToolName() const { return "Erase"; }
-
 void EraserFactory::setColor(const QColor&) {}
 void EraserFactory::setSize(int s) { size = s; }
 
@@ -331,7 +327,6 @@ ITool* ShapeFactory::create() {
 }
 
 std::string ShapeFactory::getToolName() const { return "Shape"; }
-
 void ShapeFactory::setColor(const QColor& c) { color = c; }
 void ShapeFactory::setSize(int s) { size = s; }
 
@@ -349,7 +344,6 @@ void BucketTool::use(ICanvas& canvas, int x, int y) {
 }
 
 std::string BucketTool::getToolName() const { return "Bucket"; }
-
 void BucketTool::setColor(const QColor& c) { color = c.rgba(); }
 void BucketTool::setSize(int) {}
 
@@ -420,7 +414,6 @@ ITool* BucketFactory::create() {
 }
 
 std::string BucketFactory::getToolName() const { return "Bucket"; }
-
 void BucketFactory::setColor(const QColor& c) { color = c; }
 void BucketFactory::setSize(int) {}
 
@@ -435,7 +428,6 @@ void TextTool::use(ICanvas& canvas, int x, int y) {
 }
 
 std::string TextTool::getToolName() const { return "Text"; }
-
 void TextTool::setColor(const QColor& c) { color = c; }
 void TextTool::setSize(int s) { fontSize = s; }
 
@@ -466,6 +458,5 @@ ITool* TextFactory::create() {
 }
 
 std::string TextFactory::getToolName() const { return "Text"; }
-
 void TextFactory::setColor(const QColor& c) { color = c; }
 void TextFactory::setSize(int) {}
