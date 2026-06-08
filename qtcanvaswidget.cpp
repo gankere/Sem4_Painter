@@ -310,33 +310,39 @@ void QtCanvasWidget::drawPreview(const QPoint& startCanvas, const QPoint& curren
     if (!shapeTool) return;
     
     QRgb color = activeToolColor.rgba();
-    int brushRadius = brushSize / 2;
-    
     QRgb* imageData = reinterpret_cast<QRgb*>(previewImage.bits());
     
+    // Лямбда для безопасной установки пикселя в превью
+    auto setPreviewPixel = [&](int x, int y) {
+        if (x >= 0 && x < canvasW && y >= 0 && y < canvasH) {
+            imageData[y * canvasW + x] = color;
+        }
+    };
+
+    std::vector<std::pair<int, int>> offsets;
+    int sz = brushSize;
+    if (sz > 0) {
+        double radius = (sz - 1) / 2.0;
+        int half = std::ceil(radius);
+        for (int dy = -half; dy <= half; ++dy) {
+            for (int dx = -half; dx <= half; ++dx) {
+                if (std::sqrt(dx*dx + dy*dy) <= radius + 0.5) {
+                    offsets.push_back({dx, dy});
+                }
+            }
+        }
+    }
+
     switch (shapeTool->getShapeType()) {
         case ShapeTool::Line: {
             int x1 = startCanvas.x(), y1 = startCanvas.y();
             int x2 = currentCanvas.x(), y2 = currentCanvas.y();
-            
             int dx = std::abs(x2 - x1), dy = std::abs(y2 - y1);
             int sx = (x1 < x2) ? 1 : -1, sy = (y1 < y2) ? 1 : -1;
             int err = dx - dy;
             
             while (true) {
-                for (int bdy = -brushRadius; bdy <= brushRadius; ++bdy) {
-                    int py = y1 + bdy;
-                    if (py < 0 || py >= canvasH) continue;
-                    for (int bdx = -brushRadius; bdx <= brushRadius; ++bdx) {
-                        if (bdx*bdx + bdy*bdy <= brushRadius*brushRadius) {
-                            int px = x1 + bdx;
-                            if (px >= 0 && px < canvasW) {
-                                imageData[py * canvasW + px] = color;
-                            }
-                        }
-                    }
-                }
-                
+                for (const auto& [ox, oy] : offsets) setPreviewPixel(x1 + ox, y1 + oy);
                 if (x1 == x2 && y1 == y2) break;
                 int e2 = 2 * err;
                 if (e2 > -dy) { err -= dy; x1 += sx; }
@@ -351,21 +357,25 @@ void QtCanvasWidget::drawPreview(const QPoint& startCanvas, const QPoint& curren
             int minY = std::min(startCanvas.y(), currentCanvas.y());
             int maxY = std::max(startCanvas.y(), currentCanvas.y());
             
-            int halfSize = brushRadius;
+            std::vector<std::pair<int, int>> squareOffsets;
+            int start = -(sz - 1) / 2;
+            int end = sz / 2;
+            for (int dy = start; dy <= end; ++dy) {
+                for (int dx = start; dx <= end; ++dx) {
+                    squareOffsets.push_back({dx, dy});
+                }
+            }
             
-            for (int y = minY - halfSize; y <= maxY + halfSize; ++y) {
-                if (y < 0 || y >= canvasH) continue;
-                for (int x = minX - halfSize; x <= maxX + halfSize; ++x) {
-                    if (x < 0 || x >= canvasW) continue;
-                    
-                    bool nearTop = (y >= minY - halfSize && y <= minY + halfSize);
-                    bool nearBottom = (y >= maxY - halfSize && y <= maxY + halfSize);
-                    bool nearLeft = (x >= minX - halfSize && x <= minX + halfSize);
-                    bool nearRight = (x >= maxX - halfSize && x <= maxX + halfSize);
-                    
-                    if (nearTop || nearBottom || nearLeft || nearRight) {
-                        imageData[y * canvasW + x] = color;
-                    }
+            for (int x = minX; x <= maxX; ++x) {
+                for (const auto& [ox, oy] : squareOffsets) {
+                    setPreviewPixel(x + ox, minY + oy);
+                    setPreviewPixel(x + ox, maxY + oy);
+                }
+            }
+            for (int y = minY + 1; y < maxY; ++y) {
+                for (const auto& [ox, oy] : squareOffsets) {
+                    setPreviewPixel(minX + ox, y + oy);
+                    setPreviewPixel(maxX + ox, y + oy);
                 }
             }
             break;
@@ -379,25 +389,13 @@ void QtCanvasWidget::drawPreview(const QPoint& startCanvas, const QPoint& curren
             
             int steps = std::max(radiusX, radiusY) * 8;
             if (steps < 100) steps = 100;
-            if (steps > 1000) steps = 1000;
+            if (steps > 2000) steps = 2000;
             
             for (int i = 0; i < steps; ++i) {
                 double angle = 2.0 * 3.14159265359 * i / steps;
                 int x = centerX + static_cast<int>(radiusX * std::cos(angle) + 0.5);
                 int y = centerY + static_cast<int>(radiusY * std::sin(angle) + 0.5);
-                
-                for (int bdy = -brushRadius; bdy <= brushRadius; ++bdy) {
-                    int py = y + bdy;
-                    if (py < 0 || py >= canvasH) continue;
-                    for (int bdx = -brushRadius; bdx <= brushRadius; ++bdx) {
-                        if (bdx*bdx + bdy*bdy <= brushRadius*brushRadius) {
-                            int px = x + bdx;
-                            if (px >= 0 && px < canvasW) {
-                                imageData[py * canvasW + px] = color;
-                            }
-                        }
-                    }
-                }
+                for (const auto& [ox, oy] : offsets) setPreviewPixel(x + ox, y + oy);
             }
             break;
         }

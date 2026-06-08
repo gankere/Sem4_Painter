@@ -4,6 +4,50 @@
 #include <cmath>
 #include <QImage>
 
+// ============================================
+// ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ (должна быть до всех классов)
+// ============================================
+
+// Единая функция для генерации круглой маски кисти любого размера
+static std::vector<std::pair<int, int>> getBrushOffsets(int size) {
+    std::vector<std::pair<int, int>> offsets;
+    if (size <= 0) return offsets;
+    
+    // Плавное масштабирование: радиус растёт на 0.5 за каждый шаг размера
+    double radius = (size - 1) / 2.0;
+    int half = std::ceil(radius); 
+    
+    for (int dy = -half; dy <= half; ++dy) {
+        for (int dx = -half; dx <= half; ++dx) {
+            double dist = std::sqrt(dx*dx + dy*dy);
+            if (dist <= radius + 0.5) { // +0.5 чтобы захватывать краевые пиксели
+                offsets.push_back({dx, dy});
+            }
+        }
+    }
+    return offsets;
+}
+
+// Единая функция для генерации квадратной маски кисти
+static std::vector<std::pair<int, int>> getSquareBrushOffsets(int size) {
+    std::vector<std::pair<int, int>> offsets;
+    if (size <= 0) return offsets;
+    
+    int start = -(size - 1) / 2;
+    int end = size / 2;
+    
+    for (int dy = start; dy <= end; ++dy) {
+        for (int dx = start; dx <= end; ++dx) {
+            offsets.push_back({dx, dy});
+        }
+    }
+    return offsets;
+}
+
+// ============================================
+// CANVAS
+// ============================================
+
 Canvas::Canvas(int width, int height) 
     : w(width), h(height), isUndoing(false), isBatching(false), batchCount(0) {
     if (w <= 0 || h <= 0) throw std::invalid_argument("Size must be positive");
@@ -70,9 +114,33 @@ void Canvas::clear() {
     std::fill(data.begin(), data.end(), Pixel());
 }
 
-// === BrushTool ===
-BrushTool::BrushTool(const QColor& c, int s) : color(c), size(s) {}
+void Canvas::loadFromImage(const QImage& image, int x, int y, int width, int height) {
+    QImage converted = image.convertToFormat(QImage::Format_ARGB32);
+    
+    isUndoing = true;
+    
+    int actualWidth = std::min(width, w - x);
+    int actualHeight = std::min(height, h - y);
+    
+    Pixel* canvasData = data.data();
+    
+    for (int row = 0; row < actualHeight; ++row) {
+        const QRgb* srcLine = reinterpret_cast<const QRgb*>(converted.scanLine(row));
+        Pixel* destLine = canvasData + (y + row) * w + x;
+        
+        for (int col = 0; col < actualWidth; ++col) {
+            destLine[col].color = srcLine[col];
+        }
+    }
+    
+    isUndoing = false;
+}
 
+// ============================================
+// BRUSHTOOL
+// ============================================
+
+BrushTool::BrushTool(const QColor& c, int s) : color(c), size(s) {}
 
 void BrushTool::use(ICanvas& canvas, int x, int y) {
     double radius = size / 2.0;
@@ -93,7 +161,10 @@ std::string BrushTool::getToolName() const { return "Draw"; }
 void BrushTool::setColor(const QColor& c) { color = c; }
 void BrushTool::setSize(int s) { size = s; }
 
-// === EraserTool ===
+// ============================================
+// ERASERTOOL
+// ============================================
+
 EraserTool::EraserTool(int s) : size(s) {}
 
 void EraserTool::use(ICanvas& canvas, int x, int y) {
@@ -111,7 +182,10 @@ std::string EraserTool::getToolName() const { return "Erase"; }
 void EraserTool::setColor(const QColor&) {}
 void EraserTool::setSize(int s) { size = s; }
 
-// === ShapeTool ===
+// ============================================
+// SHAPETOOL
+// ============================================
+
 ShapeTool::ShapeTool(const QColor& c, Type type, int s) 
     : color(c), shapeType(type), size(s), isDragging(false) {}
 
@@ -158,17 +232,13 @@ void ShapeTool::drawLine(ICanvas& canvas, int x1, int y1, int x2, int y2) {
     int dx = std::abs(x2 - x1), dy = std::abs(y2 - y1);
     int sx = (x1 < x2) ? 1 : -1, sy = (y1 < y2) ? 1 : -1;
     int err = dx - dy;
-    int radius = size / 2;
+    
+    auto offsets = getBrushOffsets(size);
 
     while (true) {
-        for (int dy = -radius; dy <= radius; ++dy) {
-            for (int dx = -radius; dx <= radius; ++dx) {
-                if (dx*dx + dy*dy <= radius*radius) {
-                    canvas.setPixel(x1 + dx, y1 + dy, Pixel(color.rgba()));
-                }
-            }
+        for (const auto& [ox, oy] : offsets) {
+            canvas.setPixel(x1 + ox, y1 + oy, Pixel(color.rgba()));
         }
-        
         if (x1 == x2 && y1 == y2) break;
         int e2 = 2 * err;
         if (e2 > -dy) { err -= dy; x1 += sx; }
@@ -177,91 +247,60 @@ void ShapeTool::drawLine(ICanvas& canvas, int x1, int y1, int x2, int y2) {
 }
 
 void ShapeTool::drawRect(ICanvas& canvas, int x1, int y1, int x2, int y2) {
-    int minX = std::min(x1, x2);
-    int maxX = std::max(x1, x2);
-    int minY = std::min(y1, y2);
-    int maxY = std::max(y1, y2);
+    int minX = std::min(x1, x2), maxX = std::max(x1, x2);
+    int minY = std::min(y1, y2), maxY = std::max(y1, y2);
     
-    int halfSize = size / 2;
-    
-    for (int y = minY - halfSize; y <= maxY + halfSize; ++y) {
-        for (int x = minX - halfSize; x <= maxX + halfSize; ++x) {
-            bool nearTop = (y >= minY - halfSize && y <= minY + halfSize);
-            bool nearBottom = (y >= maxY - halfSize && y <= maxY + halfSize);
-            bool nearLeft = (x >= minX - halfSize && x <= minX + halfSize);
-            bool nearRight = (x >= maxX - halfSize && x <= maxX + halfSize);
-            
-            if (nearTop || nearBottom || nearLeft || nearRight) {
-                canvas.setPixel(x, y, Pixel(color.rgba()));
-            }
+    auto offsets = getSquareBrushOffsets(size);
+
+    //верхняя и нижняя границы
+    for (int x = minX; x <= maxX; ++x) {
+        for (const auto& [ox, oy] : offsets) {
+            canvas.setPixel(x + ox, minY + oy, Pixel(color.rgba()));
+            canvas.setPixel(x + ox, maxY + oy, Pixel(color.rgba()));
+        }
+    }
+    //левая и правая границы
+    for (int y = minY + 1; y < maxY; ++y) {
+        for (const auto& [ox, oy] : offsets) {
+            canvas.setPixel(minX + ox, y + oy, Pixel(color.rgba()));
+            canvas.setPixel(maxX + ox, y + oy, Pixel(color.rgba()));
         }
     }
 }
 
 void ShapeTool::drawEllipse(ICanvas& canvas, int x1, int y1, int x2, int y2) {
-    int centerX = (x1 + x2) / 2;
-    int centerY = (y1 + y2) / 2;
-    int radiusX = std::abs(x2 - x1) / 2;
-    int radiusY = std::abs(y2 - y1) / 2;
-    int brushRadius = size / 2;
+    int centerX = (x1 + x2) / 2, centerY = (y1 + y2) / 2;
+    int radiusX = std::abs(x2 - x1) / 2, radiusY = std::abs(y2 - y1) / 2;
+    
+    auto offsets = getBrushOffsets(size);
 
     if (radiusX == 0 && radiusY == 0) {
-        for (int dy = -brushRadius; dy <= brushRadius; ++dy) {
-            for (int dx = -brushRadius; dx <= brushRadius; ++dx) {
-                if (dx*dx + dy*dy <= brushRadius*brushRadius) {
-                    canvas.setPixel(centerX + dx, centerY + dy, Pixel(color.rgba()));
-                }
-            }
-        }
-        return;
-    }
-    
-    if (radiusX == 0) {
-        for (int y = centerY - radiusY; y <= centerY + radiusY; ++y) {
-            for (int dy = -brushRadius; dy <= brushRadius; ++dy) {
-                for (int dx = -brushRadius; dx <= brushRadius; ++dx) {
-                    if (dx*dx + dy*dy <= brushRadius*brushRadius) {
-                        canvas.setPixel(centerX + dx, y + dy, Pixel(color.rgba()));
-                    }
-                }
-            }
-        }
-        return;
-    }
-    
-    if (radiusY == 0) {
-        for (int x = centerX - radiusX; x <= centerX + radiusX; ++x) {
-            for (int dy = -brushRadius; dy <= brushRadius; ++dy) {
-                for (int dx = -brushRadius; dx <= brushRadius; ++dx) {
-                    if (dx*dx + dy*dy <= brushRadius*brushRadius) {
-                        canvas.setPixel(x + dx, centerY + dy, Pixel(color.rgba()));
-                    }
-                }
-            }
+        for (const auto& [ox, oy] : offsets) {
+            canvas.setPixel(centerX + ox, centerY + oy, Pixel(color.rgba()));
         }
         return;
     }
 
     int steps = std::max(radiusX, radiusY) * 8;
-    if (steps < 200) steps = 200;
-    if (steps > 3000) steps = 3000;
+    if (steps < 100) steps = 100;
+    if (steps > 2000) steps = 2000;
     
+    // Рисуем эллипс по параметрическому уравнению, штампуя кисть
     for (int i = 0; i < steps; ++i) {
         double angle = 2.0 * 3.14159265359 * i / steps;
         int x = centerX + static_cast<int>(radiusX * std::cos(angle) + 0.5);
         int y = centerY + static_cast<int>(radiusY * std::sin(angle) + 0.5);
 
-        for (int dy = -brushRadius; dy <= brushRadius; ++dy) {
-            for (int dx = -brushRadius; dx <= brushRadius; ++dx) {
-                if (dx*dx + dy*dy <= brushRadius*brushRadius) {
-                    canvas.setPixel(x + dx, y + dy, Pixel(color.rgba()));
-                }
-            }
+        for (const auto& [ox, oy] : offsets) {
+            canvas.setPixel(x + ox, y + oy, Pixel(color.rgba()));
         }
     }
 }
 
-// === Factories ===
+// ============================================
+// FACTORIES
+// ============================================
+
 BrushFactory::BrushFactory(const QColor& c, int s) : color(c), size(s) {}
 
 ITool* BrushFactory::create() { 
@@ -296,7 +335,10 @@ std::string ShapeFactory::getToolName() const { return "Shape"; }
 void ShapeFactory::setColor(const QColor& c) { color = c; }
 void ShapeFactory::setSize(int s) { size = s; }
 
-// === BucketTool ===
+// ============================================
+// BUCKETTOOL
+// ============================================
+
 BucketTool::BucketTool(const QColor& c) : color(c.rgba()) {}
 
 void BucketTool::use(ICanvas& canvas, int x, int y) {
@@ -305,6 +347,7 @@ void BucketTool::use(ICanvas& canvas, int x, int y) {
         floodFill(*realCanvas, x, y, color);
     }
 }
+
 std::string BucketTool::getToolName() const { return "Bucket"; }
 
 void BucketTool::setColor(const QColor& c) { color = c.rgba(); }
@@ -316,15 +359,10 @@ void BucketTool::floodFill(Canvas& canvas, int startX, int startY, QRgb fillColo
 
     if (startX < 0 || startX >= width || startY < 0 || startY >= height) return;
     
-    // Прямой доступ к памяти
     Pixel* data = canvas.getData();
     QRgb targetColor = data[startY * width + startX].color;
     if (targetColor == fillColor) return;
 
-    // Отключаем undo на время заливки
-    bool wasUndoing = canvas.getIsUndoing();
-    canvas.setIsUndoing(true);
-    
     std::vector<std::pair<int, int>> stack;
     stack.reserve(10000);
     stack.push_back({startX, startY});
@@ -332,6 +370,10 @@ void BucketTool::floodFill(Canvas& canvas, int startX, int startY, QRgb fillColo
     while (!stack.empty()) {
         auto [x, y] = stack.back();
         stack.pop_back();
+        
+        if (data[y * width + x].color != targetColor) {// пропускаем пиксели, которые уже залиты
+            continue;
+        }
         
         int x1 = x;
         while (x1 > 0 && data[y * width + (x1 - 1)].color == targetColor) {
@@ -343,9 +385,8 @@ void BucketTool::floodFill(Canvas& canvas, int startX, int startY, QRgb fillColo
             x2++;
         }       
 
-        // ПРЯМАЯ ЗАПИСЬ в память
-        for (int i = x1; i <= x2; ++i) {
-            data[y * width + i].color = fillColor;
+        for (int i = x1; i <= x2; ++i) { //Записб в историю заливки малых областей
+            canvas.setPixel(i, y, Pixel(fillColor));
         }
                
         if (y > 0) {
@@ -366,11 +407,12 @@ void BucketTool::floodFill(Canvas& canvas, int startX, int startY, QRgb fillColo
             }
         }
     }
-    
-    canvas.setIsUndoing(wasUndoing);
 }
 
-// === BucketFactory ===
+// ============================================
+// BUCKETFACTORY
+// ============================================
+
 BucketFactory::BucketFactory(const QColor& c) : color(c) {}
 
 ITool* BucketFactory::create() { 
@@ -382,7 +424,10 @@ std::string BucketFactory::getToolName() const { return "Bucket"; }
 void BucketFactory::setColor(const QColor& c) { color = c; }
 void BucketFactory::setSize(int) {}
 
-// === TextTool ===
+// ============================================
+// TEXTTOOL
+// ============================================
+
 TextTool::TextTool(const QColor& c, int size) : color(c), fontSize(size) {}
 
 void TextTool::use(ICanvas& canvas, int x, int y) {
@@ -410,7 +455,10 @@ void TextTool::drawText(ICanvas& canvas, int x, int y, const QString& text) {
     }
 }
 
-// === TextFactory ===
+// ============================================
+// TEXTFACTORY
+// ============================================
+
 TextFactory::TextFactory(const QColor& c) : color(c) {}
 
 ITool* TextFactory::create() { 
@@ -421,25 +469,3 @@ std::string TextFactory::getToolName() const { return "Text"; }
 
 void TextFactory::setColor(const QColor& c) { color = c; }
 void TextFactory::setSize(int) {}
-
-void Canvas::loadFromImage(const QImage& image, int x, int y, int width, int height) {
-    QImage converted = image.convertToFormat(QImage::Format_ARGB32);
-    
-    isUndoing = true;
-    
-    int actualWidth = std::min(width, w - x);
-    int actualHeight = std::min(height, h - y);
-    
-    Pixel* canvasData = data.data();
-    
-    for (int row = 0; row < actualHeight; ++row) {
-        const QRgb* srcLine = reinterpret_cast<const QRgb*>(converted.scanLine(row));
-        Pixel* destLine = canvasData + (y + row) * w + x;
-        
-        for (int col = 0; col < actualWidth; ++col) {
-            destLine[col].color = srcLine[col];
-        }
-    }
-    
-    isUndoing = false;
-}
