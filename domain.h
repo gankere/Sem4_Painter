@@ -46,9 +46,11 @@ class Canvas : public ICanvas {
 private:
     std::vector<Pixel> data;
     int w, h;
-    std::stack<UndoStep> undoHistory;
+    std::stack<UndoStep, std::vector<UndoStep>> undoHistory;
     bool isUndoing;
     bool isBatching;
+    int batchCount = 0; // Счётчик действий в истории
+    static const int MAX_BATCHES = 500; // Максимум 500 действий в истории
     
 public:
     Canvas(int width, int height);

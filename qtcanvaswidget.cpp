@@ -263,11 +263,6 @@ void QtCanvasWidget::mouseReleaseEvent(QMouseEvent* event) {
 }
 
 void QtCanvasWidget::clearCanvas() {
-    if (!canvas) return;
-    int width = canvas->getWidth();
-    int height = canvas->getHeight();
-    delete canvas;
-    canvas = new Canvas(width, height);
     canvasCache = QPixmap();
     cacheDirty = true;
     textItems.clear();
@@ -531,9 +526,10 @@ QVector<QPoint> QtCanvasWidget::getBrushMask(int brushSize) {
 
 QVector<QPoint> QtCanvasWidget::getEraserMask(int brushSize) {
     QVector<QPoint> points;
-    int half = brushSize / 2;
-    for (int dy = -half; dy <= half; ++dy) {
-        for (int dx = -half; dx <= half; ++dx) {
+    int start = -(brushSize - 1) / 2;
+    int end = brushSize / 2;
+    for (int dy = start; dy <= end; ++dy) {
+        for (int dx = start; dx <= end; ++dx) {
             points.append(QPoint(dx, dy));
         }
     }

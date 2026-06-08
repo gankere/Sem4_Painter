@@ -413,7 +413,15 @@ void MainWindow::onClearClicked() {
     }
     
     if (QMessageBox::question(this, "Подтверждение", "Очистить холст?") == QMessageBox::Yes) {
-        canvasWidget->clearCanvas();
+        int w = canvas->getWidth();
+        int h = canvas->getHeight();
+        
+        delete canvas;
+        canvas = new Canvas(w, h);
+
+        canvasWidget->setCanvas(*canvas);
+        canvasWidget->clearCanvas(); 
+        
         updateCanvasSizeLabel();
     }
 }
@@ -431,6 +439,7 @@ void MainWindow::adjustBrightness(int value) {
 }
 
 void MainWindow::updateCanvasSizeLabel() {
+    if (!canvas) return;
     if (canvas) {
         int width = canvas->getWidth();
         int height = canvas->getHeight();

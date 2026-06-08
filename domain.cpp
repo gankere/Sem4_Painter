@@ -5,7 +5,7 @@
 #include <QImage>
 
 Canvas::Canvas(int width, int height) 
-    : w(width), h(height), isUndoing(false), isBatching(false) {
+    : w(width), h(height), isUndoing(false), isBatching(false), batchCount(0) {
     if (w <= 0 || h <= 0) throw std::invalid_argument("Size must be positive");
     data.resize(w * h, Pixel());
 }
@@ -13,15 +13,12 @@ Canvas::Canvas(int width, int height)
 void Canvas::setPixel(int x, int y, Pixel p) {
     if (x >= 0 && x < w && y >= 0 && y < h) {
         if (!isUndoing) {
-            if (undoHistory.size() > 10000000) { //Ограничение истории
-                std::stack<UndoStep> temp;
-                std::swap(undoHistory, temp);
-            }
             undoHistory.push(UndoStep(x, y, data[y * w + x].color, false));
         }
         data[y * w + x] = p;
     }
 }
+
 Pixel Canvas::getPixel(int x, int y) const {
     if (x >= 0 && x < w && y >= 0 && y < h)
         return data[y * w + x];
@@ -32,8 +29,15 @@ int Canvas::getWidth() const { return w; }
 int Canvas::getHeight() const { return h; }
 
 void Canvas::startBatch() {
+    if (batchCount >= MAX_BATCHES) {
+        // Если лимит превышен — очищаем всю историю
+        std::stack<UndoStep, std::vector<UndoStep>>().swap(undoHistory);
+        batchCount = 0;
+    }
+    
     isBatching = true;
-    undoHistory.push(UndoStep(-1, -1, 0, true));
+    undoHistory.push(UndoStep(-1, -1, 0, true)); // Маркер начала действия
+    batchCount++;
 }
 
 void Canvas::endBatch() {
@@ -47,7 +51,12 @@ void Canvas::undo() {
     while (!undoHistory.empty()) {
         UndoStep step = undoHistory.top();
         undoHistory.pop();
-        if (step.isBatchMarker) break;
+        
+        if (step.isBatchMarker) {
+            batchCount--; // Уменьшаем количество действий в истории
+            break;
+        }
+        
         if (step.x >= 0 && step.x < w && step.y >= 0 && step.y < h) {
             data[step.y * w + step.x] = Pixel(step.previousColor);
         }
@@ -56,8 +65,8 @@ void Canvas::undo() {
 }
 
 void Canvas::clear() {
-    std::stack<UndoStep>().swap(undoHistory);
-    
+    std::stack<UndoStep, std::vector<UndoStep>>().swap(undoHistory);
+    batchCount = 0;
     std::fill(data.begin(), data.end(), Pixel());
 }
 
@@ -88,10 +97,11 @@ void BrushTool::setSize(int s) { size = s; }
 EraserTool::EraserTool(int s) : size(s) {}
 
 void EraserTool::use(ICanvas& canvas, int x, int y) {
-    int half = size / 2;
-    for (int dy = -half; dy <= half; ++dy) {
-        for (int dx = -half; dx <= half; ++dx) {
-            canvas.setPixel(x + dx, y + dy, Pixel());
+    int startX = x - (size - 1) / 2;
+    int startY = y - (size - 1) / 2;
+    for (int dy = 0; dy < size; ++dy) {
+        for (int dx = 0; dx < size; ++dx) {
+            canvas.setPixel(startX + dx, startY + dy, Pixel());
         }
     }
 }
